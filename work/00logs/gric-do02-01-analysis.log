@@ -1,0 +1,101 @@
+---------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/shaymilner/Documents/Spring 2022/SOC4981/work/00logs/gric-do02-01-analysis.log
+  log type:  text
+ opened on:  27 Mar 2022, 14:42:14
+
+.  
+. //  setup
+.  
+.  version 16.1
+
+.  set linesize 80
+
+.  clear all
+
+.  macro drop _all
+
+.  set matsize 100, perm
+(set matsize preference recorded)
+set matsize ignored.
+    Matrix sizes are no longer limited by c(matsize) in modern Statas.  Matrix
+    sizes are now limited by flavor of Stata.  See limits for more details.
+
+. 
+.  
+.  local pgm   gric-do02-01-analysis.do
+
+.  
+. // Created 
+.  local dte   2022-02-02
+
+.  local who   chanteria milner
+
+.  local tag   "`pgm'.do `who' `dte'"
+
+.  
+. 
+. // Modified
+.  local dte      2022-03-13
+
+.  local who      chanteria milner
+
+.  
+.  di "`tag'"
+gric-do02-01-analysis.do.do chanteria milner 2022-02-02
+
+. 
+. 
+. ****************************************************************
+. //  import data
+. ****************************************************************
+. 
+.  use "_data/gric-do01-descriptives.dta", clear
+
+.  
+. 
+end of do-file
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD27383.000000"
+
+.  logistic bc_rec up_prob
+
+Logistic regression                             Number of obs     =        695
+                                                LR chi2(1)        =       1.71
+                                                Prob > chi2       =     0.1908
+Log likelihood = -452.57517                     Pseudo R2         =     0.0019
+
+------------------------------------------------------------------------------
+      bc_rec | Odds Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     up_prob |   .9457692   .0404896    -1.30   0.193     .8696493    1.028552
+       _cons |   2.660683   .8385939     3.10   0.002     1.434536    4.934859
+------------------------------------------------------------------------------
+Note: _cons estimates baseline odds.
+
+. 
+end of do-file
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD27383.000000"
+
+.  logistic bc_rec up_prob com_iud com_pill
+
+Logistic regression                             Number of obs     =        695
+                                                LR chi2(3)        =     121.91
+                                                Prob > chi2       =     0.0000
+Log likelihood = -392.47505                     Pseudo R2         =     0.1344
+
+------------------------------------------------------------------------------
+      bc_rec | Odds Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     up_prob |   1.019063   .0487925     0.39   0.693     .9277809    1.119325
+     com_iud |   .6405304   .0292381    -9.76   0.000     .5857135    .7004776
+    com_pill |   1.184678   .0817615     2.46   0.014     1.034794    1.356271
+       _cons |     5.1696    3.29732     2.58   0.010     1.480935    18.04587
+------------------------------------------------------------------------------
+Note: _cons estimates baseline odds.
+
+. 
+end of do-file
+
+. exit

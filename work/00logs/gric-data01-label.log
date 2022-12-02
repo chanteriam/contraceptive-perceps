@@ -1,0 +1,1002 @@
+--------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/shaymilner/Documents/Spring 2022/SOC4981/work/00logs/gric-da
+> ta01-label.log
+  log type:  text
+ opened on:  12 Mar 2022, 13:06:21
+
+.  
+. //  setup
+.  
+.  version 16.1
+
+.  set linesize 80
+
+.  clear all
+
+.  macro drop _all
+
+.  set matsize 100, perm
+(set matsize preference recorded)
+set matsize ignored.
+    Matrix sizes are no longer limited by c(matsize) in modern Statas.  Matrix
+    sizes are now limited by flavor of Stata.  See limits for more details.
+
+. 
+.  
+.  local pgm   gric-data01-label.do
+
+.  
+. // Created 
+.  local dte   2022-01-13
+
+.  local who   chanteria milner
+
+.  
+.  
+. // Modified
+.  local dte      2022-01-14
+
+.  local who      chanteria milner
+
+. 
+. 
+. ****************************************************************
+. //  import data
+. ****************************************************************
+. 
+.  use "_data/gric-data00-clean.dta", clear
+
+. 
+.  order prolificid vig_race vig_job, before(is_agree)
+
+. 
+. ****************************************************************
+. //  label variables
+. ****************************************************************
+. 
+. **********
+. /// Front matter        
+> **********      
+.  
+.  // vig name
+.  encode vig_name, gen(vig_name2)
+
+.  drop vig_name
+
+.  rename vig_name2 vig_name
+
+.  la var vig_name "Vignette Name"
+
+.  replace vig_name=0 if vig_name==1
+(241 real changes made)
+
+.  replace vig_name=1 if vig_name==2
+(233 real changes made)
+
+.  replace vig_name=2 if vig_name==3
+(234 real changes made)
+
+.  label define vig_name 0 "Alexis" 1 "Emily" 2 "Sara"
+
+.  label val vig_name vig_name
+
+. 
+.  
+.  // vig race
+.  encode vig_race, gen(vig_race2)
+
+.  drop vig_race
+
+.  rename vig_race2 vig_race
+
+.  la var vig_race "Vignette Race/Ethnicity"
+
+.  replace vig_race=0 if vig_race==1
+(241 real changes made)
+
+.  replace vig_race=1 if vig_race==2
+(234 real changes made)
+
+.  replace vig_race=2 if vig_race==3
+(233 real changes made)
+
+.  label define vig_race 0 "Black" 1 "Latina" 2 "White"
+
+.  label val vig_race vig_race
+
+. 
+.  
+.  // vig college
+.  encode vig_college, gen(vig_college2)
+
+.  drop vig_college 
+
+.  rename vig_college2 vig_college
+
+.  la var vig_college "Vignette College"
+
+.  replace vig_college=0 if vig_college==1
+(357 real changes made)
+
+.  replace vig_college=1 if vig_college==2
+(351 real changes made)
+
+.  label define vig_college 0 "No" 1 "Yes"
+
+.  label val vig_college vig_college
+
+.  
+. 
+.  // vig job
+.  encode vig_job, gen(vig_job2)
+
+.  drop vig_job
+
+.  rename vig_job2 vig_job
+
+.  la var vig_job "Vignette Job"
+
+.  replace vig_job=0 if vig_job==1
+(351 real changes made)
+
+.  replace vig_job=1 if vig_job==2
+(357 real changes made)
+
+.  label define vig_job 0 "Bank" 1 "House Cleaner"
+
+.  label val vig_job vig_job
+
+. 
+.  
+.  // vig ses
+.  gen vig_ses = vig_job
+
+.  la var vig_ses "Vignette Socio-economic Status"
+
+.  label define vig_ses 0 "high-SES" 1 "low-SES"
+
+.  label val vig_ses vig_ses
+
+.  
+.  
+.  // vig group (based on race and SES)
+.  gen vig_group=0 // black, low-income as base
+
+.  replace vig_group=1 if vig_race==1 & vig_ses==1 // latina, low-ses
+(118 real changes made)
+
+.  replace vig_group=2 if vig_race==2 & vig_ses==1 // white, low-ses
+(117 real changes made)
+
+.  replace vig_group=3 if vig_race==0 & vig_ses==0 // black, high-ses
+(119 real changes made)
+
+.  replace vig_group=4 if vig_race==1 & vig_ses==0 // latina, high-ses
+(116 real changes made)
+
+.  replace vig_group=5 if vig_race==2 & vig_ses==0 // white, high-ses
+(116 real changes made)
+
+.  label define vig_group 0 "Black, Low-SES" ///
+>                                                 1 "Latina, Low-SES" ///
+>                                                 2 "White, Low-SES"      ///
+>                                                 3 "Black, High-SES"     ///
+>                                                 4 "Latina, High-SES"    ///
+>                                                 5 "White, High-SES"
+
+.  label val vig_group vig_group
+
+.  la var vig_group "Vignette Group (by race/ethnicity and SES)"
+
+.  
+.  
+.  order prolificid vig_race vig_job vig_ses, before(is_agree)
+
+. 
+.         
+. **********
+. /// Scales      
+> **********
+. 
+.  // competent (SCM)
+.  la var c_comp          "Competent: Competent (1-10)"
+
+.  la var c_conf          "Competent: Confident (1-10)"
+
+.  la var c_capable       "Competent: Confident (1-10)"
+
+.  la var c_efficient     "Competent: Efficient (1-10)"
+
+.  la var c_intel         "Competent: Intelligent (1-10)"
+
+.  la var c_skill         "Compentent: Skillfull (1-10)"
+
+.  
+.  // warm (SCM)
+.  la var w_friendly      "Warm: Friendly (1-10)"
+
+.  la var w_wellint       "Warm: Well-intentioned (1-10)"
+
+.  la var w_trust         "Warm: Trust-worthy (1-10)"
+
+.  la var w_warm          "Warm: Warm (1-10)"
+
+.  la var w_goodnat       "Warm: Good-natured (1-10)"
+
+.  la var w_sincere       "Warm: Sincere (1-10)"
+
+.  
+.  // sexuality & unintended pregnancy
+.  la var promisc                          "How sexually promiscuous is characte
+> r?"
+
+.  la var up_prob                          "How problematic is UP to most people
+> ?"
+
+.  la var up_lifequal_now          "What is character's quality of life now?"
+
+.  la var up_lifequal_up           "What would be character's life quality after
+>  UP?"
+
+.  la var up_lifequal_child        "What would be character's child's life quali
+> ty after UP?"
+
+.  la var up_likely                        "What is character's likelihood of ha
+> ving an UP?"
+
+.  la var up_wel                           "What is character's likelihood of us
+> ing welfare after UP?"
+
+.  la var up_resp_s                        "How responsible is state for charact
+> er's UP?"
+
+.  la var up_resp_c                        "How responsible is character for cha
+> racter's UP?"
+
+.         
+. 
+. **********
+. /// Dependent measure   
+> **********
+.  
+.  // recommendation 
+.  la var bc_rec "What contraception should character use?"
+
+.  replace bc_rec=0 if bc_rec==1
+(249 real changes made)
+
+.  replace bc_rec=1 if bc_rec==2
+(446 real changes made)
+
+.  replace bc_rec=2 if bc_rec==3
+(13 real changes made)
+
+.  label define bc_rec 0 "IUD" 1 "Pill" 2 "Sterilization"
+
+.  label val bc_rec bc_rec
+
+. 
+.  rename bc_rec_text bc_recopen
+
+.         la var bc_recopen "Please explain why you chose this contraceptive."
+
+.  
+.  
+.  // how common is x contraceptive?
+.  la var com_iud                 "Perceived Contraceptive Prevalence: IUD (1-10
+> )"
+
+.  la var com_implant             "Perceived Contraceptive Prevalence: Implant (
+> 1-10)"
+
+.  la var com_sterile             "Perceived Contraceptive Prevalence: Steriliza
+> tion (1-10)"
+
+.  la var com_pill                "Perceived Contraceptive Prevalence: Pill (1-1
+> 0)"
+
+.  la var com_condom              "Perceived Contraceptive Prevalence: Male Cond
+> om (1-10)"
+
+.  la var com_withdraw    "Perceived Contraceptive Prevalence: Withdrawal (1-10)
+> "
+
+.         
+. 
+. 
+. **********
+. ///  Attention checks   
+> **********
+.  
+.  // name
+.  replace attn_name=0 if attn_name==1
+(236 real changes made)
+
+.  replace attn_name=1 if attn_name==2
+(234 real changes made)
+
+.  replace attn_name=2 if attn_name==3
+(226 real changes made)
+
+.  replace attn_name=3 if attn_name==4
+(12 real changes made)
+
+.  label define attn_name 0 "Alexis" 1 "Emily" 2 "Sara" 3 "Forgot"
+
+.  label val attn_name attn_name
+
+.  
+.  
+.  // race
+.  replace attn_race=0 if attn_race==1
+(238 real changes made)
+
+.  replace attn_race=1 if attn_race==2
+(232 real changes made)
+
+.  replace attn_race=2 if attn_race==3
+(227 real changes made)
+
+.  replace attn_race=3 if attn_race==4
+(11 real changes made)
+
+.  label define attn_race 0 "Black" 1 "Hispanic" 2 "White" 3 "Forgot"
+
+.  label val attn_race attn_race
+
+.  
+.  
+.  // age
+.  label define attn_age 3 "Forgot"
+
+.  label val attn_age attn_age
+
+.  
+.  
+.  // job
+.  replace attn_job=0 if attn_job==1
+(337 real changes made)
+
+.  replace attn_job=1 if attn_job==2
+(353 real changes made)
+
+.  replace attn_job=2 if attn_job==3
+(18 real changes made)
+
+.  label define attn_job 0 "Bank" 1 "House Cleaner" 2 "Forgot"
+
+.  label val attn_job attn_job
+
+.  
+.  
+.  // college
+.  replace attn_college=0 if attn_college==2
+(343 real changes made)
+
+.  replace attn_college=2 if attn_college==3
+(41 real changes made)
+
+.  label define attn_college 0 "No" 1 "Yes" 2 "Forgot"
+
+.  label val attn_college attn_college
+
+. 
+. 
+. 
+. **********
+. ///  Demographics       
+> **********
+. 
+.  // age - categorical
+.  gen r_age_c=.
+(708 missing values generated)
+
+.          replace r_age_c=0 if r_age < 25
+(212 real changes made)
+
+.          replace r_age_c=1 if r_age > 24 & r_age < 35 
+(245 real changes made)
+
+.          replace r_age_c=2 if r_age > 34 & r_age < 45
+(122 real changes made)
+
+.          replace r_age_c=3 if r_age > 44 & r_age < 55
+(67 real changes made)
+
+.          replace r_age_c=4 if r_age > 54 & r_age < 65
+(33 real changes made)
+
+.          replace r_age_c=5 if r_age > 64
+(29 real changes made)
+
+.  label define r_age_c 0 "18-24" 1 "25-34" 2 "35-44" 3 "45-54" 4 "55-64" 5 "65+
+> "
+
+.  label val r_age_c r_age_c
+
+.  la var r_age_c "Respondent Age - Categorical"
+
+.  
+.  // gender
+.  replace r_gender=0 if r_gender==1
+(342 real changes made)
+
+.  replace r_gender=1 if r_gender==2
+(345 real changes made)
+
+.  replace r_gender=2 if r_gender==3 | r_gender==4
+(21 real changes made)
+
+.  label define r_gender 0 "Woman" 1 "Man" 2 "Nonbinary or Other Gender"
+
+.  label val r_gender r_gender
+
+.  
+. 
+.  // race/ethnicity
+.  split r_race, parse(,)
+variables created as string: 
+r_race1  r_race2  r_race3
+
+.  drop r_race
+
+.         
+.  gen r_race = .
+(708 missing values generated)
+
+.          // edit based on multi races
+.          // collapse Amerindian, asian, and hawaiin into other
+.          destring r_race1 r_race2 r_race3, replace // edit based on multi race
+> s
+r_race1: all characters numeric; replaced as byte
+r_race2: all characters numeric; replaced as byte
+(687 missing values generated)
+r_race3: all characters numeric; replaced as byte
+(706 missing values generated)
+
+.          replace r_race=0 if r_race1==1 & r_race2==. & r_race3==.
+(9 real changes made)
+
+.          replace r_race=1 if r_race1==2 & r_race2==. & r_race3==.
+(36 real changes made)
+
+.          replace r_race=2 if r_race1==3 & r_race2==. & r_race3==.
+(167 real changes made)
+
+.          replace r_race=3 if r_race1==4 & r_race2==. & r_race3==.
+(1 real change made)
+
+.          replace r_race=4 if r_race1==5 & r_race2==. & r_race3==.
+(451 real changes made)
+
+.          replace r_race=5 if r_race1==6 & r_race2==. & r_race3==.
+(23 real changes made)
+
+.          replace r_race=6 if r_race1!=. & r_race2!=. 
+(21 real changes made)
+
+.  
+.  la var r_race "Respondent Race/Ethnicity"
+
+.  label define r_race 0 "American Indian/Alaskan Native" 1 "Asian" 2 "Black" //
+> /
+>                                         3 "Native Hawaiian or Pacific Islander
+> " 4 "White" ///
+>                                         5 "Other"  6 "Multiracial"
+
+.  label val r_race r_race
+
+.  drop r_race1 r_race2 r_race3 // edit based on multi races
+
+.  
+.  replace r_hispanic=0 if r_hispanic==2
+(554 real changes made)
+
+.  label define r_hispanic 0 "Not Hispanic" 1 "Hispanic" 
+
+.  label val r_hispanic r_hispanic
+
+.  
+. 
+.  // race/ethnicity truncated - for analytical purposes
+.  gen r_race_t =.
+(708 missing values generated)
+
+.         replace r_race_t=0 if r_race==2 &r_hispanic==0 // black, non-hispanic
+(158 real changes made)
+
+.         replace r_race_t=1 if r_hispanic==1 // hispanic
+(154 real changes made)
+
+.         replace r_race_t=2 if r_race==4 & r_hispanic==0 // white, non-hispanic
+(346 real changes made)
+
+.         replace r_race_t=3 if (r_race==0 | r_race==1 | r_race==3 | r_race==5 |
+>  ///
+>                                                    r_race==6) & r_hispanic==0 
+> // other
+(50 real changes made)
+
+.          
+.         label var r_race_t "Respondent Race/Ethnicity"
+
+.         label define r_race_t 0 "Non-Hispanic Black" 1 "Hispanic" 2 "Non-Hispa
+> nic White" ///
+>                                                   3 "Non-Hispanic Other"
+
+.         label val r_race_t r_race_t
+
+.                 
+.                 
+.  // political affiliation
+.  replace r_pol=0 if r_pol==1
+(166 real changes made)
+
+.  replace r_pol=1 if r_pol==2
+(263 real changes made)
+
+.  replace r_pol=2 if r_pol==3
+(190 real changes made)
+
+.  replace r_pol=3 if r_pol==4
+(73 real changes made)
+
+.  replace r_pol=4 if r_pol==5
+(16 real changes made)
+
+.  label define r_pol 0 "Very Liberal" 1 "Liberal" 2 "Moderate" 3 "Conservative"
+>  ///
+>                                         4 "Very Conservative"
+
+.  label val r_pol r_pol
+
+.  
+.  
+.  // political affiliation - truncated
+.  gen r_pol_t=.
+(708 missing values generated)
+
+.         replace r_pol_t=0 if r_pol==0 | r_pol==1
+(429 real changes made)
+
+.         replace r_pol_t=1 if r_pol==2
+(190 real changes made)
+
+.         replace r_pol_t=2 if r_pol==3 | r_pol==4
+(89 real changes made)
+
+. 
+.  label define r_pol_t 0 "Liberal" 1 "Moderate" 2 "Conservative"
+
+.  label val r_pol_t r_pol_t
+
+.  label var r_pol_t "Respondent Political Affiliation - Truncated"
+
+.   
+.  
+.  // education
+.  replace r_educ=0 if r_educ==1 | r_educ==2 // hs or less
+(84 real changes made)
+
+.  replace r_educ=1 if r_educ==3
+(182 real changes made)
+
+.  replace r_educ=2 if r_educ==4
+(84 real changes made)
+
+.  replace r_educ=3 if r_educ==5
+(278 real changes made)
+
+.  replace r_educ=4 if r_educ==6 // master's or more
+(80 real changes made)
+
+.  label define r_educ 0 "High School Diploma/GED or Less" ///
+>                                          1 "Some College" 2 "2-Year Degree" 3 
+> "4-Year Degree" ///
+>                                          4 "Master's, Doctorate, or Profession
+> al Degree"
+
+.  label val r_educ r_educ
+
+.  
+.   
+.  // religion - categorical
+.  replace r_relig=0 if r_relig==1 // Catholic
+(98 real changes made)
+
+.  replace r_relig=1 if r_relig==2 // Jewish
+(19 real changes made)
+
+.  replace r_relig=2 if r_relig==3 // Muslum
+(9 real changes made)
+
+.  replace r_relig=3 if r_relig==4 // Protestant
+(115 real changes made)
+
+.  replace r_relig=4 if r_relig==5 // None
+(376 real changes made)
+
+.  replace r_relig=5 if r_relig==6 // Other
+(91 real changes made)
+
+.  label define r_relig 0 "Catholic" 1 "Jewish" 2 "Muslim" 3 "Protestant" ///
+>                                           4 "None" 5 "Other"
+
+.  label val r_relig r_relig
+
+.  
+.  
+.  // religion - binary
+.  gen r_relig_b=.
+(708 missing values generated)
+
+.         replace r_relig_b=0 if r_relig==4
+(376 real changes made)
+
+.         replace r_relig_b=1 if r_relig!=4
+(332 real changes made)
+
+.  label var r_relig_b "Respondent is Religious"
+
+.  label define r_relig_b 0 "Non-Religious" 1 "Religious"
+
+.  label val r_relig_b r_relig_b
+
+. 
+.  
+.  // opposite gendered sexual encounter
+.  replace r_sex_enc=0 if r_sex_enc==2
+(152 real changes made)
+
+.  replace r_sex_enc=2 if r_sex_enc==. 
+(1 real change made)
+
+.  label define r_sex_enc 0 "No" 1 "Yes" 2 "Unanswered"
+
+.  label val r_sex_enc r_sex_enc
+
+. 
+.  
+.  // contraception usage
+.  split r_bc, parse(,)
+variables created as string: 
+r_bc1  r_bc2  r_bc3  r_bc4  r_bc5
+
+. 
+.          // add more as there are multiple bc usages
+.         destring r_bc1 r_bc2 r_bc3 r_bc4 r_bc5 /*r_bc6 r_bc7 r_bc8 */ , replac
+> e
+r_bc1: all characters numeric; replaced as byte
+(3 missing values generated)
+r_bc2: all characters numeric; replaced as byte
+(256 missing values generated)
+r_bc3: all characters numeric; replaced as byte
+(435 missing values generated)
+r_bc4: all characters numeric; replaced as byte
+(610 missing values generated)
+r_bc5: all characters numeric; replaced as byte
+(695 missing values generated)
+
+.         
+.         // none (0)
+.         gen r_nobc = 0
+
+.                 foreach v of varlist r_bc1-r_bc5 { // change as num BC increas
+> es, up to r_bc8
+  2.                         replace r_nobc=1 if `v'==0
+  3.                 }
+(105 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+
+.                 la var r_nobc "Respondent Contraception: None"
+
+.         
+.         // bcp (1)
+.         gen r_pill = 0
+
+.                 foreach v of varlist r_bc1-r_bc5 { // change as num BC increas
+> es, up to r_bc8
+  2.                         replace r_pill=1 if `v'==1
+  3.                 }
+(400 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+
+.                 la var r_pill "Respondent Contraception: The Pill"
+
+.         
+.         // iud (2)
+.         gen r_iud = 0
+
+.                 foreach v of varlist r_bc1-r_bc5 { // change as num BC increas
+> es, up to r_bc8
+  2.                         replace r_iud=1 if `v'==2
+  3.                 }
+(20 real changes made)
+(93 real changes made)
+(0 real changes made)
+(0 real changes made)
+(0 real changes made)
+
+.                 la var r_iud "Respondent Contraception: IUD"
+
+.                 
+.         // male condom (3)
+.         gen r_condom = 0
+
+.                 foreach v of varlist r_bc1-r_bc5 { // change as num BC increas
+> es, up to r_bc8
+  2.                         replace r_condom=1 if `v'==3
+  3.                 }
+(142 real changes made)
+(271 real changes made)
+(83 real changes made)
+(0 real changes made)
+(0 real changes made)
+
+.                 la var r_condom "Respondent Contraception: Male Condom"
+
+.         
+.         // implant (4)
+.         gen r_implant = 0
+
+.                 foreach v of varlist r_bc1-r_bc5 { // change as num BC increas
+> es, up to r_bc8
+  2.                         replace r_implant=1 if `v'==4
+  3.                 }
+(3 real changes made)
+(9 real changes made)
+(19 real changes made)
+(10 real changes made)
+(0 real changes made)
+
+.                 la var r_implant "Respondent Contraception: Subdermal Implant"
+
+.         
+.         // female sterilization (5)
+.         gen r_sterile = 0
+
+.                 foreach v of varlist r_bc1-r_bc5 { // change as num BC increas
+> es, up to r_bc8
+  2.                         replace r_sterile=1 if `v'==5
+  3.                 }
+(0 real changes made)
+(7 real changes made)
+(12 real changes made)
+(4 real changes made)
+(0 real changes made)
+
+.                 la var r_sterile "Respondent Contraception: Female Sterilizati
+> on"
+
+.         
+.         // withdrawal (6)
+.         gen r_withdraw = 0
+
+.                 foreach v of varlist r_bc1-r_bc5 { // change as num BC increas
+> es, up to r_bc8
+  2.                         replace r_withdraw=1 if `v'==6
+  3.                 }
+(12 real changes made)
+(69 real changes made)
+(148 real changes made)
+(77 real changes made)
+(11 real changes made)
+
+.                 la var r_withdraw "Respondent Contraception: Withdrawal"
+
+.         
+.         // other bc (7)
+.         gen r_other = 0
+
+.                 foreach v of varlist r_bc1-r_bc5 { // change as num BC increas
+> es, up to r_bc8
+  2.                         replace r_other=1 if `v'==7
+  3.                 }
+(23 real changes made)
+(3 real changes made)
+(11 real changes made)
+(7 real changes made)
+(2 real changes made)
+
+.                 la var r_other "Respondent Contraception: Other"
+
+.                 
+.         // label variables
+.         la def bc_usage 0 "Have Not Used" 1 "Have Used"
+
+.         foreach v of varlist r_nobc-r_other {
+  2.                 label val `v' bc_usage
+  3.         }
+
+.         
+.  drop r_bc // however, don't want to drop open-end
+
+.  drop r_bc1-r_bc5 // change as num BC increases, up to r_bc8
+
+.  order r_bcopen, after(r_other)
+
+.         
+.         
+.  // in-group variables (based on race, gender, and/or bc usage)
+.   // race
+.   gen ingroup_race = 0
+
+.         replace ingroup_race = 1 if r_race_t==vig_race
+(226 real changes made)
+
+.         la var ingroup_race "Ingroup: Race"
+
+.         
+.         
+.   // gender
+.   gen ingroup_gender = 0
+
+.         replace ingroup_gender = 1 if r_gender == 0 // woman
+(342 real changes made)
+
+.         la var ingroup_gender "Ingroup: Gender"
+
+.  
+.  // bc usage
+.  gen ingroup_bc = 0
+
+.         replace ingroup_bc = 1 if bc_rec == 0 & r_iud==1 // IUD
+(53 real changes made)
+
+.         replace ingroup_bc = 1 if bc_rec == 1 & r_pill==1 // BCP
+(246 real changes made)
+
+.         replace ingroup_bc = 1 if bc_rec == 2 & r_sterile==1 // Sterilization
+(0 real changes made)
+
+.         la var ingroup_bc "Ingroup: Contraceptive Usage"
+
+. 
+.  // race & gender
+.  gen ingroup_rg=0
+
+.         replace ingroup_rg=1 if ingroup_race==1 & ingroup_gender==1
+(109 real changes made)
+
+.         la var ingroup_rg "Ingroup: Race and Gender"
+
+. 
+.  // bc & gender
+.  gen ingroup_bcg=0
+
+.         replace ingroup_bcg=1 if ingroup_bc==1 & ingroup_gender==1
+(141 real changes made)
+
+.         la var ingroup_bcg "Ingroup: Contraceptive Usage and Gender"
+
+. 
+.  // bc & race
+.  gen ingroup_bcr=0
+
+.         replace ingroup_bcr=1 if ingroup_bc==1 & ingroup_race==1
+(96 real changes made)
+
+.         la var ingroup_bcr "Ingroup: Contraceptive Usage and Race"
+
+. 
+.  // bc, race, & gender
+.  gen ingroup=0
+
+.         replace ingroup=1 if ingroup_bc==1 & ingroup_race==1 & ingroup_gender=
+> =1
+(49 real changes made)
+
+.         la var ingroup_bcr "Ingroup: Contraceptive Usage, Race, & Gender"
+
+.                 
+.         
+.  la def ingroup 0 "Outgroup" 1 "Ingroup"
+
+.  la val ingrou* ingroup
+
+.   
+. ****************************************************************
+. //  save and exit
+. ****************************************************************
+.         codebook, compact
+
+Variable      Obs Unique      Mean  Min  Max  Label
+--------------------------------------------------------------------------------
+prolificid    708    708         .    .    .  Prolific ID
+vig_race      708      3  .9887006    0    2  Vignette Race/Ethnicity
+vig_job       708      2  .5042373    0    1  Vignette Job
+vig_ses       708      2  .5042373    0    1  Vignette Socio-economic Status
+is_agree      708      1         1    1    1  is_agree
+rescheck      708      1         1    1    1  US Residece Verification
+agecheck      708      1         1    1    1  Age Verification
+c_comp        708     10  6.427966    1   10  Competent: Competent (1-10)
+c_conf        708     10  6.559322    1   10  Competent: Confident (1-10)
+c_capable     708     10  6.641243    1   10  Competent: Confident (1-10)
+c_efficient   708     10  6.519774    1   10  Competent: Efficient (1-10)
+c_intel       708     10   6.20339    1   10  Competent: Intelligent (1-10)
+c_skill       708     10  6.137006    1   10  Compentent: Skillfull (1-10)
+w_friendly    708      9   6.64548    2   10  Warm: Friendly (1-10)
+w_wellint     708      9  6.874294    2   10  Warm: Well-intentioned (1-10)
+w_trust       708     10  6.508475    1   10  Warm: Trust-worthy (1-10)
+w_warm        708     10  6.577684    1   10  Warm: Warm (1-10)
+w_goodnat     708     10  6.652542    1   10  Warm: Good-natured (1-10)
+w_sincere     708     10  6.617232    1   10  Warm: Sincere (1-10)
+up_prob       708     10  7.073446    1   10  How problematic is UP to most p...
+promisc       708     10  5.330508    1   10  How sexually promiscuous is cha...
+up_lifequa~w  708     10  5.661017    1   10  What is character's quality of ...
+up_lifequa~p  708     10  3.587571    1   10  What would be character's life ...
+up_lifequa~d  708     10  3.850282    1   10  What would be character's child...
+up_likely     708     10  5.491525    1   10  What is character's likelihood ...
+up_welf       708     10  6.403955    1   10  What is character's likelihood ...
+up_resp_s     708     10  4.036723    1   10  How responsible is state for ch...
+up_resp_c     708     10  8.268362    1   10  How responsible is character fo...
+bc_rec        708      3  .6666667    0    2  What contraception should chara...
+bc_recopen    708    673         .    .    .  Please explain why you chose th...
+com_iud       708     10  5.782486    1   10  Perceived Contraceptive Prevale...
+com_implant   708     10  4.521186    1   10  Perceived Contraceptive Prevale...
+com_sterile   708     10  3.050847    1   10  Perceived Contraceptive Prevale...
+com_pill      708      9   8.90113    1   10  Perceived Contraceptive Prevale...
+com_condom    708     10  7.929379    1   10  Perceived Contraceptive Prevale...
+com_withdraw  708     10  7.531073    1   10  Perceived Contraceptive Prevale...
+attn_name     708      4  1.019774    0    3  Attention Check - Name
+attn_age      708      4  20.68079    3   26  attn_age
+attn_race     708      4  1.015537    0    3  Attention Check - Race
+attn_job      708      3   .549435    0    2  Attention Check - Job
+attn_college  708      3  .5734463    0    2  Attention Check - College Atten...
+r_age         707     58  33.33663   18   77  Respondent Age
+r_gender      708      3  .5466102    0    2  Respondent Gender
+r_genderopen    1      1         .    .    .  Repondent Gender - open
+r_race_6_t~t   24     11         .    .    .  r_race_6_TEXT
+r_hispanic    708      2  .2175141    0    1  Is R Hispanic/Latino?
+r_pol         708      5   1.30791    0    4  Respondent Political Affiliation
+r_educ        708      5  2.124294    0    4  Respondent Education
+r_relig       708      6  3.306497    0    5  Respondent Religion
+r_religopen    90     43         .    .    .  Respondent Religion - open
+r_stab_child  708     10  6.031073    1   10  R's Financial Stability: Childh...
+r_stab_now    708     10  6.079096    1   10  R's Financial Stability: Now (1...
+r_sex_enc     708      3  .7867232    0    2  R has had a Voluntary Sexual En...
+vig_name      708      3   .990113    0    2  Vignette Name
+vig_college   708      2  .4957627    0    1  Vignette College
+vig_group     708      6  2.475989    0    5  Vignette Group (by race/ethnici...
+r_age_c       708      6  1.365819    0    5  Respondent Age - Categorical
+r_race        708      7  3.415254    0    6  Respondent Race/Ethnicity
+r_race_t      708      4   1.40678    0    3  Respondent Race/Ethnicity
+r_pol_t       708      3   .519774    0    2  Respondent Political Affiliatio...
+r_relig_b     708      2  .4689266    0    1  Respondent is Religious
+r_nobc        708      2  .1483051    0    1  Respondent Contraception: None
+r_pill        708      2  .5649718    0    1  Respondent Contraception: The Pill
+r_iud         708      2  .1596045    0    1  Respondent Contraception: IUD
+r_condom      708      2   .700565    0    1  Respondent Contraception: Male ...
+r_implant     708      2  .0579096    0    1  Respondent Contraception: Subde...
+r_sterile     708      2  .0324859    0    1  Respondent Contraception: Femal...
+r_withdraw    708      2  .4477401    0    1  Respondent Contraception: Withd...
+r_other       708      2  .0649718    0    1  Respondent Contraception: Other
+r_bcopen       46     40         .    .    .  Respondent Birth Control - open
+ingroup_race  708      2   .319209    0    1  Ingroup: Race
+ingroup_ge~r  708      2  .4830508    0    1  Ingroup: Gender
+ingroup_bc    708      2  .4223164    0    1  Ingroup: Contraceptive Usage
+ingroup_rg    708      2  .1539548    0    1  Ingroup: Race and Gender
+ingroup_bcg   708      2  .1991525    0    1  Ingroup: Contraceptive Usage an...
+ingroup_bcr   708      2  .1355932    0    1  Ingroup: Contraceptive Usage, R...
+ingroup       708      2   .069209    0    1  
+--------------------------------------------------------------------------------
+
+.         
+.         save "_data/gric-data01-label.dta", replace
+file _data/gric-data01-label.dta saved
+
+. 
+.  log close
+      name:  <unnamed>
+       log:  /Users/shaymilner/Documents/Spring 2022/SOC4981/work/00logs/gric-da
+> ta01-label.log
+  log type:  text
+ closed on:  12 Mar 2022, 13:06:21
+--------------------------------------------------------------------------------

@@ -1,0 +1,243 @@
+-----------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/shaymilner/Documents/Spring 2022/SOC4981/work/00logs/gric-data00-clean.log
+  log type:  text
+ opened on:  12 Mar 2022, 13:06:14
+
+.  
+. //  setup
+.  
+.  version 16.1
+
+.  set linesize 80
+
+.  clear all
+
+.  macro drop _all
+
+.  set matsize 100, perm
+(set matsize preference recorded)
+set matsize ignored.
+    Matrix sizes are no longer limited by c(matsize) in modern Statas.  Matrix
+    sizes are now limited by flavor of Stata.  See limits for more details.
+
+. 
+.  
+.  local pgm   gric-data00-clean.do
+
+.  
+. // Created 
+.  local dte   2022-01-13
+
+.  local who   chanteria milner
+
+. 
+.  
+. // Modified
+.  local dte      2022-01-14
+
+.  local who      chanteria milner
+
+.  
+.  
+.  di "`tag'"
+
+
+. 
+.  
+. ****************************************************************
+. //  import data
+. ****************************************************************
+.  
+.  import excel "_rawdata/gric-2022-02-23-02.xlsx", firstrow case(lower)
+(79 vars, 729 obs)
+
+. 
+. ****************************************************************
+. //  drop variables/responses
+. ****************************************************************
+.  
+.  // unnecessary data
+.  drop startdate-responseid
+
+.  drop distributionchannel-userlanguage
+
+.  drop prolific_pid-vignette
+
+.  drop timing*
+
+.  drop q99_firstclick-q99_clickcount
+
+.  drop r_bc_6_textparenttopics-r_bc_6_texttopics
+
+.  
+.  // informed consent & u.s./age verification
+.  drop if is_agree==2 // look at settings for partial responses
+(0 observations deleted)
+
+.  drop if rescheck==2
+(1 observation deleted)
+
+.  drop if agecheck==2
+(1 observation deleted)
+
+. 
+. 
+. ****************************************************************
+. //  rename variables
+. ****************************************************************
+. 
+.  // verification
+.  la var prolificid "Prolific ID"
+
+.  la var rescheck "US Residece Verification"
+
+.  la var agecheck "Age Verification"
+
+. 
+.  
+.  // attention checks
+.  la var attn_name "Attention Check - Name"
+
+.  la var attn_race "Attention Check - Race"
+
+.  la var attn_job "Attention Check - Job"
+
+.  la var attn_college "Attention Check - College Attendance"
+
+. 
+.  
+.  // demographics
+.  la var r_gender "Respondent Gender"
+
+.  la var r_age "Respondent Age"
+
+.  la var r_hispanic "Is R Hispanic/Latino?"
+
+.  la var r_pol "Respondent Political Affiliation"
+
+.  la var r_educ "Respondent Education"
+
+.  la var r_relig "Respondent Religion"
+
+.  la var r_stab_child "R's Financial Stability: Childhood (1-10)"
+
+.  la var r_stab_now "R's Financial Stability: Now (1-10)"
+
+.  la var r_sex_enc "R has had a Voluntary Sexual Encounter"
+
+. 
+.  rename r_gender_4_text r_genderopen
+
+.         la var r_genderopen "Repondent Gender - open"
+
+. 
+.  rename r_relig_6_text r_religopen
+
+.         la var r_religopen "Respondent Religion - open"
+
+. 
+.  rename r_bc_7_text r_bcopen
+
+.         la var r_bcopen "Respondent Birth Control - open"
+
+. 
+.         
+.  // char's life quality
+.  rename lifequal_now up_lifequal_now
+
+.  rename lifequal_up up_lifequal_up
+
+.  rename lifequal_child up_lifequal_child
+
+.  
+. ****************************************************************
+. //  drop incomplete responses
+. ****************************************************************
+.  
+.  drop if bc_rec==. // dependent measure
+(18 observations deleted)
+
+.  drop if attn_age==.
+(1 observation deleted)
+
+.  
+.  
+. ****************************************************************
+. //  save and exit
+. ****************************************************************
+.         codebook, compact
+
+Variable      Obs Unique      Mean  Min  Max  Label
+--------------------------------------------------------------------------------
+is_agree      708      1         1    1    1  is_agree
+prolificid    708    708         .    .    .  Prolific ID
+rescheck      708      1         1    1    1  US Residece Verification
+agecheck      708      1         1    1    1  Age Verification
+c_comp        708     10  6.427966    1   10  c_comp
+c_conf        708     10  6.559322    1   10  c_conf
+c_capable     708     10  6.641243    1   10  c_capable
+c_efficient   708     10  6.519774    1   10  c_efficient
+c_intel       708     10   6.20339    1   10  c_intel
+c_skill       708     10  6.137006    1   10  c_skill
+w_friendly    708      9   6.64548    2   10  w_friendly
+w_wellint     708      9  6.874294    2   10  w_wellint
+w_trust       708     10  6.508475    1   10  w_trust
+w_warm        708     10  6.577684    1   10  w_warm
+w_goodnat     708     10  6.652542    1   10  w_goodnat
+w_sincere     708     10  6.617232    1   10  w_sincere
+up_prob       708     10  7.073446    1   10  up_prob
+promisc       708     10  5.330508    1   10  promisc
+up_lifequa~w  708     10  5.661017    1   10  lifequal_now
+up_lifequa~p  708     10  3.587571    1   10  lifequal_up
+up_lifequa~d  708     10  3.850282    1   10  lifequal_child
+up_likely     708     10  5.491525    1   10  up_likely
+up_welf       708     10  6.403955    1   10  up_welf
+up_resp_s     708     10  4.036723    1   10  up_resp_s
+up_resp_c     708     10  8.268362    1   10  up_resp_c
+bc_rec        708      3  1.666667    1    3  bc_rec
+bc_rec_text   708    673         .    .    .  bc_rec_text
+com_iud       708     10  5.782486    1   10  com_iud
+com_implant   708     10  4.521186    1   10  com_implant
+com_sterile   708     10  3.050847    1   10  com_sterile
+com_pill      708      9   8.90113    1   10  com_pill
+com_condom    708     10  7.929379    1   10  com_condom
+com_withdraw  708     10  7.531073    1   10  com_withdraw
+attn_name     708      4  2.019774    1    4  Attention Check - Name
+attn_age      708      4  20.68079    3   26  attn_age
+attn_race     708      4  2.015537    1    4  Attention Check - Race
+attn_job      708      3  1.549435    1    3  Attention Check - Job
+attn_college  708      3  1.600282    1    3  Attention Check - College Atten...
+r_age         707     58  33.33663   18   77  Respondent Age
+r_gender      708      4  1.548023    1    4  Respondent Gender
+r_genderopen    1      1         .    .    .  Repondent Gender - open
+r_race        708     17         .    .    .  r_race
+r_race_6_t~t   24     11         .    .    .  r_race_6_TEXT
+r_hispanic    708      2  1.782486    1    2  Is R Hispanic/Latino?
+r_pol         708      5   2.30791    1    5  Respondent Political Affiliation
+r_educ        708      6  4.118644    1    6  Respondent Education
+r_relig       708      6  4.306497    1    6  Respondent Religion
+r_religopen    90     43         .    .    .  Respondent Religion - open
+r_stab_child  708     10  6.031073    1   10  R's Financial Stability: Childh...
+r_stab_now    708     10  6.079096    1   10  R's Financial Stability: Now (1...
+r_sex_enc     707      2  1.214993    1    2  R has had a Voluntary Sexual En...
+r_bc          705     47         .    .    .  r_bc
+r_bcopen       46     40         .    .    .  Respondent Birth Control - open
+vig_name      708      3         .    .    .  vig_name
+vig_race      708      3         .    .    .  vig_race
+vig_job       708      2         .    .    .  vig_job
+vig_college   708      2         .    .    .  vig_college
+--------------------------------------------------------------------------------
+
+.         
+.         save "_data/gric-data00-clean.dta", replace
+file _data/gric-data00-clean.dta saved
+
+. 
+.  log close
+      name:  <unnamed>
+       log:  /Users/shaymilner/Documents/Spring 2022/SOC4981/work/00logs/gric-da
+> ta00-clean.log
+  log type:  text
+ closed on:  12 Mar 2022, 13:06:15
+--------------------------------------------------------------------------------

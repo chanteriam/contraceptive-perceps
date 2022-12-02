@@ -1,0 +1,109 @@
+---------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/shaymilner/Documents/Spring 2022/SOC4981/work/00logs/gric-do01-descriptives.log
+  log type:  text
+ opened on:  21 Mar 2022, 15:29:01
+
+.  
+. //  setup
+.  
+.  version 16.1
+
+.  set linesize 80
+
+.  clear all
+
+.  macro drop _all
+
+.  set matsize 100, perm
+(set matsize preference recorded)
+set matsize ignored.
+    Matrix sizes are no longer limited by c(matsize) in modern Statas.  Matrix
+    sizes are now limited by flavor of Stata.  See limits for more details.
+
+. 
+.  
+.  local pgm   gric-do01-descriptives.do
+
+.  
+. // Created 
+.  local dte   2022-01-14
+
+.  local who   chanteria milner
+
+.  local tag   "`pgm'.do `who' `dte'"
+
+.  
+. 
+. // Modified
+.  local dte      2022-01-15
+
+.  local who      chanteria milner
+
+.  
+.  di "`tag'"
+gric-do01-descriptives.do.do chanteria milner 2022-01-14
+
+. 
+. 
+. ****************************************************************
+. //  import data
+. ****************************************************************
+. 
+.  use "_data/gric-data03-scales.dta", clear
+
+.  order c_scale, before(c_comp)
+
+.  order w_scale, before(w_friendly)
+
+.  
+. 
+end of do-file
+
+. use "/Users/shaymilner/Documents/Spring 2022/SOC4981/work/_data/gric-data02-ex
+> amine.dta"
+
+. tab bc_rec vig_group
+
+         What |
+contraception |
+       should |
+    character | Vignette Group (by race/ethnicity and SES)
+         use? | Black, Lo  Latina, L  White, Lo  Black, Hi |     Total
+--------------+--------------------------------------------+----------
+          IUD |        43         47         54         41 |       249 
+         Pill |        73         68         62         75 |       446 
+--------------+--------------------------------------------+----------
+        Total |       116        115        116        116 |       695 
+
+
+         What |
+contraception |  Vignette Group (by
+       should |  race/ethnicity and
+    character |         SES)
+         use? | Latina, H  White, Hi |     Total
+--------------+----------------------+----------
+          IUD |        30         34 |       249 
+         Pill |        86         82 |       446 
+--------------+----------------------+----------
+        Total |       116        116 |       695 
+
+. tab vig_group bc_rec
+
+  Vignette Group |
+             (by |  What contraception
+  race/ethnicity | should character use?
+        and SES) |       IUD       Pill |     Total
+-----------------+----------------------+----------
+  Black, Low-SES |        43         73 |       116 
+ Latina, Low-SES |        47         68 |       115 
+  White, Low-SES |        54         62 |       116 
+ Black, High-SES |        41         75 |       116 
+Latina, High-SES |        30         86 |       116 
+ White, High-SES |        34         82 |       116 
+-----------------+----------------------+----------
+           Total |       249        446 |       695 
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD03319.000000"
+
+. capture log close

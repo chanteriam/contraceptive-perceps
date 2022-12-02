@@ -1,0 +1,859 @@
+----------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/shaymilner/Documents/Spring 2022/SOC4981/work/00logs/gric-data02-examine.log
+  log type:  text
+ opened on:   5 Apr 2022, 10:46:27
+
+.  
+. //  setup
+.  
+.  version 16.1
+
+.  set linesize 80
+
+.  clear all
+
+.  macro drop _all
+
+.  set matsize 100, perm
+(set matsize preference recorded)
+set matsize ignored.
+    Matrix sizes are no longer limited by c(matsize) in modern Statas.  Matrix
+    sizes are now limited by flavor of Stata.  See limits for more details.
+
+. 
+.  
+.  local pgm   gric-data02-examine.do
+
+.  
+. // Created 
+.  local dte   2022-01-13
+
+.  local who   chanteria milner
+
+.  
+.  
+. // Modified
+.  local dte      2022-01-14
+
+.  local who      chanteria milner
+
+. 
+. ****************************************************************
+. //  import data
+. ****************************************************************
+. 
+.  use "_data/gric-data01-label.dta", clear
+
+. 
+end of do-file
+
+. tab bc_rec vig_group
+
+         What |
+contraception |
+       should |
+    character | Vignette Group (by race/ethnicity and SES)
+         use? | Black, Lo  Latina, L  White, Lo  Black, Hi |     Total
+--------------+--------------------------------------------+----------
+          IUD |        43         47         54         41 |       249 
+         Pill |        73         68         62         75 |       446 
+Sterilization |         6          3          1          3 |        13 
+--------------+--------------------------------------------+----------
+        Total |       122        118        117        119 |       708 
+
+
+         What |
+contraception |  Vignette Group (by
+       should |  race/ethnicity and
+    character |         SES)
+         use? | Latina, H  White, Hi |     Total
+--------------+----------------------+----------
+          IUD |        30         34 |       249 
+         Pill |        86         82 |       446 
+Sterilization |         0          0 |        13 
+--------------+----------------------+----------
+        Total |       116        116 |       708 
+
+. tab vig_group bc_rec
+
+  Vignette Group |
+             (by |    What contraception should
+  race/ethnicity |          character use?
+        and SES) |       IUD       Pill  Steriliza |     Total
+-----------------+---------------------------------+----------
+  Black, Low-SES |        43         73          6 |       122 
+ Latina, Low-SES |        47         68          3 |       118 
+  White, Low-SES |        54         62          1 |       117 
+ Black, High-SES |        41         75          3 |       119 
+Latina, High-SES |        30         86          0 |       116 
+ White, High-SES |        34         82          0 |       116 
+-----------------+---------------------------------+----------
+           Total |       249        446         13 |       708 
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD03969.000000"
+
+.  oneway c_scale vig_group, tab
+variable c_scale not found
+r(111);
+
+end of do-file
+
+r(111);
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD03969.000000"
+
+. 
+. ***********
+. //competence alpha=0.9557
+. ***********
+.  
+.  pwcorr c_comp c_conf c_capable c_efficient c_intel c_skill // is there a corr
+> elation between all of these? >=0.7 is ideal
+
+             |   c_comp   c_conf c_capa~e c_effi~t  c_intel  c_skill
+-------------+------------------------------------------------------
+      c_comp |   1.0000 
+      c_conf |   0.7661   1.0000 
+   c_capable |   0.8655   0.7870   1.0000 
+ c_efficient |   0.7472   0.7035   0.8260   1.0000 
+     c_intel |   0.8404   0.7475   0.8531   0.7889   1.0000 
+     c_skill |   0.7538   0.6827   0.7861   0.8081   0.8378   1.0000 
+
+.  
+.  alpha c_comp c_conf c_capable c_efficient c_intel c_skill, item
+
+Test scale = mean(unstandardized items)
+
+                                                            average
+                             item-test     item-rest       interitem
+Item         |  Obs  Sign   correlation   correlation     covariance      alpha
+-------------+-----------------------------------------------------------------
+c_comp       |  708    +       0.9152        0.8749        3.827713      0.9470
+c_conf       |  708    +       0.8577        0.8004        4.101635      0.9551
+c_capable    |  708    +       0.9404        0.9126        3.809091      0.9429
+c_efficient  |  708    +       0.8944        0.8489        3.971583      0.9500
+c_intel      |  708    +       0.9347        0.9004        3.677739      0.9443
+c_skill      |  708    +       0.8967        0.8484        3.878167      0.9500
+-------------+-----------------------------------------------------------------
+Test scale   |                                             3.877655      0.9566
+-------------------------------------------------------------------------------
+
+.  factor c_*, ipf
+(obs=708)
+
+Factor analysis/correlation                      Number of obs    =        708
+    Method: iterated principal factors           Retained factors =          5
+    Rotation: (unrotated)                        Number of params =         15
+
+    --------------------------------------------------------------------------
+         Factor  |   Eigenvalue   Difference        Proportion   Cumulative
+    -------------+------------------------------------------------------------
+        Factor1  |      4.78667      4.60919            0.9428       0.9428
+        Factor2  |      0.17747      0.08799            0.0350       0.9778
+        Factor3  |      0.08949      0.07307            0.0176       0.9954
+        Factor4  |      0.01642      0.00939            0.0032       0.9987
+        Factor5  |      0.00703      0.00724            0.0014       1.0000
+        Factor6  |     -0.00021            .           -0.0000       1.0000
+    --------------------------------------------------------------------------
+    LR test: independent vs. saturated:  chi2(15) = 4643.84 Prob>chi2 = 0.0000
+
+Factor loadings (pattern matrix) and unique variances
+
+    ----------------------------------------------------------------
+        Variable |  Factor1   Factor2   Factor3   Factor4   Factor5 
+    -------------+--------------------------------------------------
+          c_comp |   0.9034   -0.1957   -0.0725    0.0280   -0.0507 
+          c_conf |   0.8194   -0.1441    0.0349    0.0791    0.0408 
+       c_capable |   0.9415   -0.1278    0.1133   -0.0815   -0.0090 
+     c_efficient |   0.8802    0.1767    0.1848    0.0130    0.0053 
+         c_intel |   0.9267    0.0282   -0.1695   -0.0464    0.0438 
+         c_skill |   0.8827    0.2646   -0.0853    0.0207   -0.0277 
+    ----------------------------------------------------------------
+
+    ----------------------------
+        Variable |   Uniqueness 
+    -------------+--------------
+          c_comp |      0.1369  
+          c_conf |      0.2986  
+       c_capable |      0.0777  
+     c_efficient |      0.1596  
+         c_intel |      0.1076  
+         c_skill |      0.1424  
+    ----------------------------
+
+.  
+.  egen c_scale = rowmean(c_comp c_conf c_capable c_efficient c_intel c_skill)
+
+.  label var c_scale "Competence: Scale"
+
+.  
+.  bysort vig_ses: sum c_scale
+
+--------------------------------------------------------------------------------
+-> vig_ses = high-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        351    7.481481    1.552741          1         10
+
+--------------------------------------------------------------------------------
+-> vig_ses = low-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        357    5.366013    1.858868          1         10
+
+
+.  bysort vig_race: sum c_scale
+
+--------------------------------------------------------------------------------
+-> vig_race = Black
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        241    6.363071    2.082759          1         10
+
+--------------------------------------------------------------------------------
+-> vig_race = Latina
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        234    6.254986    1.939853          1         10
+
+--------------------------------------------------------------------------------
+-> vig_race = White
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        233    6.628755    2.003079          1         10
+
+
+.  bysort vig_group: sum c_scale
+
+--------------------------------------------------------------------------------
+-> vig_group = Black, Low-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        122    5.456284    2.072803          1         10
+
+--------------------------------------------------------------------------------
+-> vig_group = Latina, Low-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        118    5.237288    1.829821          1         10
+
+--------------------------------------------------------------------------------
+-> vig_group = White, Low-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        117    5.401709    1.648922          2         10
+
+--------------------------------------------------------------------------------
+-> vig_group = Black, High-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        119    7.292717    1.641758   2.333333         10
+
+--------------------------------------------------------------------------------
+-> vig_group = Latina, High-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        116     7.29023    1.440129        2.5         10
+
+--------------------------------------------------------------------------------
+-> vig_group = White, High-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        116    7.866379    1.508305          1         10
+
+
+.  
+.  
+. ***********
+. //warmth alpha=0.9545
+. ***********
+. 
+.  pwcorr w_friendly w_wellint w_trust w_warm w_goodnat w_sincere
+
+             | w_frie~y w_well~t  w_trust   w_warm w_good~t w_sinc~e
+-------------+------------------------------------------------------
+  w_friendly |   1.0000 
+   w_wellint |   0.7506   1.0000 
+     w_trust |   0.6866   0.8026   1.0000 
+      w_warm |   0.7727   0.7705   0.7657   1.0000 
+   w_goodnat |   0.7710   0.7908   0.7955   0.8923   1.0000 
+   w_sincere |   0.7191   0.7861   0.8169   0.8018   0.8516   1.0000 
+
+.  
+.  alpha w_friendly w_wellint w_trust w_warm w_goodnat w_sincere, item
+
+Test scale = mean(unstandardized items)
+
+                                                            average
+                             item-test     item-rest       interitem
+Item         |  Obs  Sign   correlation   correlation     covariance      alpha
+-------------+-----------------------------------------------------------------
+w_friendly   |  708    +       0.8581        0.8038        2.839476      0.9541
+w_wellint    |  708    +       0.9024        0.8567        2.644661      0.9482
+w_trust      |  708    +       0.8999        0.8493        2.588131      0.9496
+w_warm       |  708    +       0.9195        0.8824        2.636177      0.9453
+w_goodnat    |  708    +       0.9386        0.9090         2.57963      0.9423
+w_sincere    |  708    +       0.9167        0.8777        2.625861      0.9458
+-------------+-----------------------------------------------------------------
+Test scale   |                                             2.652323      0.9560
+-------------------------------------------------------------------------------
+
+.  factor w_*, ipf
+(obs=708)
+
+Factor analysis/correlation                      Number of obs    =        708
+    Method: iterated principal factors           Retained factors =          5
+    Rotation: (unrotated)                        Number of params =         15
+
+    --------------------------------------------------------------------------
+         Factor  |   Eigenvalue   Difference        Proportion   Cumulative
+    -------------+------------------------------------------------------------
+        Factor1  |      4.78271      4.61367            0.9365       0.9365
+        Factor2  |      0.16905      0.05728            0.0331       0.9696
+        Factor3  |      0.11177      0.08175            0.0219       0.9915
+        Factor4  |      0.03002      0.01632            0.0059       0.9974
+        Factor5  |      0.01370      0.01391            0.0027       1.0000
+        Factor6  |     -0.00020            .           -0.0000       1.0000
+    --------------------------------------------------------------------------
+    LR test: independent vs. saturated:  chi2(15) = 4608.72 Prob>chi2 = 0.0000
+
+Factor loadings (pattern matrix) and unique variances
+
+    ----------------------------------------------------------------
+        Variable |  Factor1   Factor2   Factor3   Factor4   Factor5 
+    -------------+--------------------------------------------------
+      w_friendly |   0.8300   -0.1006    0.2078    0.0511    0.0463 
+       w_wellint |   0.8854    0.1663    0.1712   -0.0080   -0.0592 
+         w_trust |   0.8795    0.2329   -0.0820   -0.0781    0.0253 
+          w_warm |   0.9151   -0.2112   -0.0215   -0.0965    0.0285 
+       w_goodnat |   0.9407   -0.1598   -0.1152    0.0282   -0.0722 
+       w_sincere |   0.9022    0.0832   -0.1373    0.1055    0.0372 
+    ----------------------------------------------------------------
+
+    ----------------------------
+        Variable |   Uniqueness 
+    -------------+--------------
+      w_friendly |      0.2531  
+       w_wellint |      0.1555  
+         w_trust |      0.1588  
+          w_warm |      0.1075  
+       w_goodnat |      0.0702  
+       w_sincere |      0.1477  
+    ----------------------------
+
+.  
+.  egen w_scale = rowmean(w_friendly w_wellint w_trust w_warm w_goodnat w_sincer
+> e)
+
+.  label var w_scale "Warmth: Scale"
+
+.  
+.  bysort vig_ses: sum w_scale
+
+--------------------------------------------------------------------------------
+-> vig_ses = high-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        351    7.073599    1.564704          2         10
+
+--------------------------------------------------------------------------------
+-> vig_ses = low-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        357     6.22549    1.656889          2         10
+
+
+.  bysort vig_race: sum w_scale
+
+--------------------------------------------------------------------------------
+-> vig_race = Black
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        241    6.341632     1.79845          2         10
+
+--------------------------------------------------------------------------------
+-> vig_race = Latina
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        234    6.597578    1.666552          2         10
+
+--------------------------------------------------------------------------------
+-> vig_race = White
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        233    7.009299    1.445128          3         10
+
+
+.  bysort vig_group: sum w_scale
+
+--------------------------------------------------------------------------------
+-> vig_group = Black, Low-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        122    6.058743    1.855046          2         10
+
+--------------------------------------------------------------------------------
+-> vig_group = Latina, Low-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        118    6.114407    1.589182          2         10
+
+--------------------------------------------------------------------------------
+-> vig_group = White, Low-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        117    6.511396    1.471102          3         10
+
+--------------------------------------------------------------------------------
+-> vig_group = Black, High-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        119    6.631653    1.697716        2.5         10
+
+--------------------------------------------------------------------------------
+-> vig_group = Latina, High-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        116     7.08908    1.604557          2         10
+
+--------------------------------------------------------------------------------
+-> vig_group = White, High-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        116    7.511494    1.234317          4         10
+
+
+.  
+. 
+end of do-file
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD03969.000000"
+
+.  oneway c_scale vig_group, tab
+
+   Vignette |
+  Group (by |
+race/ethnic |
+    ity and |    Summary of Competence: Scale
+       SES) |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  Black, Lo |   5.4562841   2.0728029         122
+  Latina, L |   5.2372881   1.8298214         118
+  White, Lo |   5.4017094   1.6489219         117
+  Black, Hi |   7.2927171   1.6417583         119
+  Latina, H |   7.2902299   1.4401289         116
+  White, Hi |   7.8663793   1.5083055         116
+------------+------------------------------------
+      Total |   6.4147834   2.0134011         708
+
+                        Analysis of Variance
+    Source              SS         df      MS            F     Prob > F
+------------------------------------------------------------------------
+Between groups      820.821333      5   164.164267     56.35     0.0000
+ Within groups      2045.20393    702   2.91339592
+------------------------------------------------------------------------
+    Total           2866.02527    707   4.05378397
+
+Bartlett's test for equal variances:  chi2(5) =  21.3649  Prob>chi2 = 0.001
+
+. 
+end of do-file
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD03969.000000"
+
+.  oneway w_scale vig_race, tab
+
+   Vignette |
+Race/Ethnic |      Summary of Warmth: Scale
+        ity |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+      Black |   6.3416321   1.7984498         241
+     Latina |   6.5975783   1.6665519         234
+      White |    7.009299    1.445128         233
+------------+------------------------------------
+      Total |    6.645951   1.6656652         708
+
+                        Analysis of Variance
+    Source              SS         df      MS            F     Prob > F
+------------------------------------------------------------------------
+Between groups      53.6276204      2   26.8138102      9.91     0.0001
+ Within groups      1907.90188    705   2.70624381
+------------------------------------------------------------------------
+    Total            1961.5295    707    2.7744406
+
+Bartlett's test for equal variances:  chi2(2) =  11.2691  Prob>chi2 = 0.004
+
+. 
+end of do-file
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD03969.000000"
+
+.  oneway w_scale vig_group, tab
+
+   Vignette |
+  Group (by |
+race/ethnic |
+    ity and |      Summary of Warmth: Scale
+       SES) |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  Black, Lo |   6.0587432   1.8550457         122
+  Latina, L |   6.1144068   1.5891816         118
+  White, Lo |    6.511396    1.471102         117
+  Black, Hi |   6.6316526   1.6977156         119
+  Latina, H |   7.0890805   1.6045574         116
+  White, Hi |   7.5114942   1.2343169         116
+------------+------------------------------------
+      Total |    6.645951   1.6656652         708
+
+                        Analysis of Variance
+    Source              SS         df      MS            F     Prob > F
+------------------------------------------------------------------------
+Between groups       187.23078      5    37.446156     14.82     0.0000
+ Within groups      1774.29872    702   2.52749106
+------------------------------------------------------------------------
+    Total            1961.5295    707    2.7744406
+
+Bartlett's test for equal variances:  chi2(5) =  21.2756  Prob>chi2 = 0.001
+
+. 
+end of do-file
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD03969.000000"
+
+.    oneway up_lifequal_now vig_group, tab
+
+   Vignette |
+  Group (by |
+race/ethnic |   Summary of What is character's
+    ity and |        quality of life now?
+       SES) |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  Black, Lo |   3.9672131   1.6511175         122
+  Latina, L |    4.059322   1.7604019         118
+  White, Lo |   4.3247863   1.5303203         117
+  Black, Hi |   6.8739496   1.5921131         119
+  Latina, H |   7.1206897   1.4334827         116
+  White, Hi |   7.7155172   1.2497376         116
+------------+------------------------------------
+      Total |   5.6610169   2.2098673         708
+
+                        Analysis of Variance
+    Source              SS         df      MS            F     Prob > F
+------------------------------------------------------------------------
+Between groups      1773.50069      5   354.700138    148.29     0.0000
+ Within groups      1679.14338    702   2.39194213
+------------------------------------------------------------------------
+    Total           3452.64407    707   4.88351353
+
+Bartlett's test for equal variances:  chi2(5) =  15.9123  Prob>chi2 = 0.007
+
+. 
+end of do-file
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD03969.000000"
+
+.  oneway promisc vig_group, tab
+
+   Vignette |
+  Group (by |
+race/ethnic | Summary of How sexually promiscuous
+    ity and |            is character?
+       SES) |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  Black, Lo |   5.7377049   2.3803718         122
+  Latina, L |   5.4067797   2.4676966         118
+  White, Lo |   5.3418803   2.1056672         117
+  Black, Hi |   5.4957983   2.3645473         119
+  Latina, H |    5.112069   2.2176037         116
+  White, Hi |    4.862069   2.0847127         116
+------------+------------------------------------
+      Total |   5.3305085   2.2853884         708
+
+                        Analysis of Variance
+    Source              SS         df      MS            F     Prob > F
+------------------------------------------------------------------------
+Between groups      55.1709909      5   11.0341982      2.13     0.0601
+ Within groups      3637.49003    702   5.18160972
+------------------------------------------------------------------------
+    Total           3692.66102    707   5.22300002
+
+Bartlett's test for equal variances:  chi2(5) =   5.6112  Prob>chi2 = 0.346
+
+. 
+end of do-file
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD03969.000000"
+
+.  oneway up_likely vig_group, tab
+
+   Vignette |
+  Group (by |
+race/ethnic |   Summary of What is character's
+    ity and |     likelihood of having an UP?
+       SES) |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  Black, Lo |   6.2622951   2.0279179         122
+  Latina, L |   6.1271186   2.1859951         118
+  White, Lo |   5.4188034   1.9706437         117
+  Black, Hi |    5.512605   2.0496612         119
+  Latina, H |   4.9137931   2.2440994         116
+  White, Hi |   4.6637931   2.0470295         116
+------------+------------------------------------
+      Total |   5.4915254   2.1614303         708
+
+                        Analysis of Variance
+    Source              SS         df      MS            F     Prob > F
+------------------------------------------------------------------------
+Between groups      239.013788      5   47.8027576     10.95     0.0000
+ Within groups      3063.93536    702   4.36458029
+------------------------------------------------------------------------
+    Total           3302.94915    707   4.67178098
+
+Bartlett's test for equal variances:  chi2(5) =   2.8716  Prob>chi2 = 0.720
+
+. 
+end of do-file
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD03969.000000"
+
+.  oneway up_welf vig_group, tab
+
+   Vignette |
+  Group (by |   Summary of What is character's
+race/ethnic |  likelihood of using welfare after
+    ity and |                 UP?
+       SES) |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  Black, Lo |   7.5901639   1.7332628         122
+  Latina, L |   7.7542373    1.889858         118
+  White, Lo |   7.7008547    1.825419         117
+  Black, Hi |   5.4537815   2.4137596         119
+  Latina, H |   5.5517241   2.2001772         116
+  White, Hi |   4.3017241   2.5133377         116
+------------+------------------------------------
+      Total |   6.4039548   2.5021826         708
+
+                        Analysis of Variance
+    Source              SS         df      MS            F     Prob > F
+------------------------------------------------------------------------
+Between groups      1287.93283      5   257.586565     57.61     0.0000
+ Within groups       3138.5361    702   4.47084915
+------------------------------------------------------------------------
+    Total           4426.46893    707   6.26091786
+
+Bartlett's test for equal variances:  chi2(5) =  28.2493  Prob>chi2 = 0.000
+
+. 
+end of do-file
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD03969.000000"
+
+.    oneway up_resp_c vig_group, tab
+
+   Vignette |
+  Group (by |
+race/ethnic |    Summary of How responsible is
+    ity and |    character for character's UP?
+       SES) |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  Black, Lo |   8.2213115   1.7976674         122
+  Latina, L |   8.2711864   1.6416638         118
+  White, Lo |   8.1367521    2.033792         117
+  Black, Hi |   8.4117647   1.8430436         119
+  Latina, H |   8.3103448   1.8101828         116
+  White, Hi |   8.2586207   2.0350011         116
+------------+------------------------------------
+      Total |   8.2683616   1.8596479         708
+
+                        Analysis of Variance
+    Source              SS         df      MS            F     Prob > F
+------------------------------------------------------------------------
+Between groups      4.96021463      5   .992042926      0.29     0.9212
+ Within groups      2440.05108    702   3.47585625
+------------------------------------------------------------------------
+    Total            2445.0113    707   3.45829038
+
+Bartlett's test for equal variances:  chi2(5) =   7.7332  Prob>chi2 = 0.172
+
+. 
+end of do-file
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD03969.000000"
+
+.  tab vig_group bc_rec, chi2
+
+  Vignette Group |
+             (by |    What contraception should
+  race/ethnicity |          character use?
+        and SES) |       IUD       Pill  Steriliza |     Total
+-----------------+---------------------------------+----------
+  Black, Low-SES |        43         73          6 |       122 
+ Latina, Low-SES |        47         68          3 |       118 
+  White, Low-SES |        54         62          1 |       117 
+ Black, High-SES |        41         75          3 |       119 
+Latina, High-SES |        30         86          0 |       116 
+ White, High-SES |        34         82          0 |       116 
+-----------------+---------------------------------+----------
+           Total |       249        446         13 |       708 
+
+         Pearson chi2(10) =  26.5272   Pr = 0.003
+
+. 
+end of do-file
+
+. tab bc_rec vig_group
+
+         What |
+contraception |
+       should |
+    character | Vignette Group (by race/ethnicity and SES)
+         use? | Black, Lo  Latina, L  White, Lo  Black, Hi |     Total
+--------------+--------------------------------------------+----------
+          IUD |        43         47         54         41 |       249 
+         Pill |        73         68         62         75 |       446 
+Sterilization |         6          3          1          3 |        13 
+--------------+--------------------------------------------+----------
+        Total |       122        118        117        119 |       708 
+
+
+         What |
+contraception |  Vignette Group (by
+       should |  race/ethnicity and
+    character |         SES)
+         use? | Latina, H  White, Hi |     Total
+--------------+----------------------+----------
+          IUD |        30         34 |       249 
+         Pill |        86         82 |       446 
+Sterilization |         0          0 |        13 
+--------------+----------------------+----------
+        Total |       116        116 |       708 
+
+. tab vig_group bc_rec, row
+
++----------------+
+| Key            |
+|----------------|
+|   frequency    |
+| row percentage |
++----------------+
+
+  Vignette Group |
+             (by |    What contraception should
+  race/ethnicity |          character use?
+        and SES) |       IUD       Pill  Steriliza |     Total
+-----------------+---------------------------------+----------
+  Black, Low-SES |        43         73          6 |       122 
+                 |     35.25      59.84       4.92 |    100.00 
+-----------------+---------------------------------+----------
+ Latina, Low-SES |        47         68          3 |       118 
+                 |     39.83      57.63       2.54 |    100.00 
+-----------------+---------------------------------+----------
+  White, Low-SES |        54         62          1 |       117 
+                 |     46.15      52.99       0.85 |    100.00 
+-----------------+---------------------------------+----------
+ Black, High-SES |        41         75          3 |       119 
+                 |     34.45      63.03       2.52 |    100.00 
+-----------------+---------------------------------+----------
+Latina, High-SES |        30         86          0 |       116 
+                 |     25.86      74.14       0.00 |    100.00 
+-----------------+---------------------------------+----------
+ White, High-SES |        34         82          0 |       116 
+                 |     29.31      70.69       0.00 |    100.00 
+-----------------+---------------------------------+----------
+           Total |       249        446         13 |       708 
+                 |     35.17      62.99       1.84 |    100.00 
+
+. tab vig_group bc_rec, col
+
++-------------------+
+| Key               |
+|-------------------|
+|     frequency     |
+| column percentage |
++-------------------+
+
+  Vignette Group |
+             (by |    What contraception should
+  race/ethnicity |          character use?
+        and SES) |       IUD       Pill  Steriliza |     Total
+-----------------+---------------------------------+----------
+  Black, Low-SES |        43         73          6 |       122 
+                 |     17.27      16.37      46.15 |     17.23 
+-----------------+---------------------------------+----------
+ Latina, Low-SES |        47         68          3 |       118 
+                 |     18.88      15.25      23.08 |     16.67 
+-----------------+---------------------------------+----------
+  White, Low-SES |        54         62          1 |       117 
+                 |     21.69      13.90       7.69 |     16.53 
+-----------------+---------------------------------+----------
+ Black, High-SES |        41         75          3 |       119 
+                 |     16.47      16.82      23.08 |     16.81 
+-----------------+---------------------------------+----------
+Latina, High-SES |        30         86          0 |       116 
+                 |     12.05      19.28       0.00 |     16.38 
+-----------------+---------------------------------+----------
+ White, High-SES |        34         82          0 |       116 
+                 |     13.65      18.39       0.00 |     16.38 
+-----------------+---------------------------------+----------
+           Total |       249        446         13 |       708 
+                 |    100.00     100.00     100.00 |    100.00 
+
+. tab vig_group bc_rec, row
+
++----------------+
+| Key            |
+|----------------|
+|   frequency    |
+| row percentage |
++----------------+
+
+  Vignette Group |
+             (by |    What contraception should
+  race/ethnicity |          character use?
+        and SES) |       IUD       Pill  Steriliza |     Total
+-----------------+---------------------------------+----------
+  Black, Low-SES |        43         73          6 |       122 
+                 |     35.25      59.84       4.92 |    100.00 
+-----------------+---------------------------------+----------
+ Latina, Low-SES |        47         68          3 |       118 
+                 |     39.83      57.63       2.54 |    100.00 
+-----------------+---------------------------------+----------
+  White, Low-SES |        54         62          1 |       117 
+                 |     46.15      52.99       0.85 |    100.00 
+-----------------+---------------------------------+----------
+ Black, High-SES |        41         75          3 |       119 
+                 |     34.45      63.03       2.52 |    100.00 
+-----------------+---------------------------------+----------
+Latina, High-SES |        30         86          0 |       116 
+                 |     25.86      74.14       0.00 |    100.00 
+-----------------+---------------------------------+----------
+ White, High-SES |        34         82          0 |       116 
+                 |     29.31      70.69       0.00 |    100.00 
+-----------------+---------------------------------+----------
+           Total |       249        446         13 |       708 
+                 |     35.17      62.99       1.84 |    100.00 
+
+. exit, clear

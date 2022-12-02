@@ -1,0 +1,514 @@
+--------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/shaymilner/Documents/Spring 2022/SOC4981/work/00logs/gric-da
+> ta03-scales.log
+  log type:  text
+ opened on:  12 Mar 2022, 13:06:47
+
+.  
+. //  setup
+.  
+.  version 16.1
+
+.  set linesize 80
+
+.  clear all
+
+.  macro drop _all
+
+.  set matsize 100, perm
+(set matsize preference recorded)
+set matsize ignored.
+    Matrix sizes are no longer limited by c(matsize) in modern Statas.  Matrix
+    sizes are now limited by flavor of Stata.  See limits for more details.
+
+. 
+.  
+.  local pgm   gric-data03-scales.do
+
+.  
+. // Created 
+.  local dte   2022-01-14
+
+.  local who   chanteria milner
+
+.  local tag   "`pgm'.do `who' `dte'"
+
+.  
+. 
+. // Modified
+.  local dte      2022-01-15
+
+.  local who      chanteria milner
+
+.  
+.  di "`tag'"
+gric-data03-scales.do.do chanteria milner 2022-01-14
+
+. 
+. 
+. ****************************************************************
+. //  import data
+. ****************************************************************
+. 
+.  use "_data/gric-data02-examine.dta", clear
+
+.   
+. ****************************************************************
+. // Generate Scales
+. ****************************************************************
+. 
+. ***********
+. //competence alpha=0.9557
+. ***********
+.  
+.  pwcorr c_comp c_conf c_capable c_efficient c_intel c_skill // is there a corr
+> elation between all of these? >=0.7 is ideal
+
+             |   c_comp   c_conf c_capa~e c_effi~t  c_intel  c_skill
+-------------+------------------------------------------------------
+      c_comp |   1.0000 
+      c_conf |   0.7688   1.0000 
+   c_capable |   0.8592   0.7909   1.0000 
+ c_efficient |   0.7392   0.7088   0.8189   1.0000 
+     c_intel |   0.8352   0.7528   0.8486   0.7822   1.0000 
+     c_skill |   0.7470   0.6884   0.7791   0.7999   0.8327   1.0000 
+
+.  
+.  alpha c_comp c_conf c_capable c_efficient c_intel c_skill, item
+
+Test scale = mean(unstandardized items)
+
+                                                            average
+                             item-test     item-rest       interitem
+Item         |  Obs  Sign   correlation   correlation     covariance      alpha
+-------------+-----------------------------------------------------------------
+c_comp       |  695    +       0.9121        0.8704        3.707109      0.9463
+c_conf       |  695    +       0.8632        0.8078        3.949179      0.9532
+c_capable    |  695    +       0.9377        0.9088        3.693622      0.9421
+c_efficient  |  695    +       0.8908        0.8440        3.849395      0.9493
+c_intel      |  695    +       0.9333        0.8980        3.546889      0.9434
+c_skill      |  695    +       0.8942        0.8446        3.748282      0.9493
+-------------+-----------------------------------------------------------------
+Test scale   |                                              3.74908      0.9557
+-------------------------------------------------------------------------------
+
+.  factor c_*, ipf
+(obs=695)
+
+Factor analysis/correlation                      Number of obs    =        695
+    Method: iterated principal factors           Retained factors =          5
+    Rotation: (unrotated)                        Number of params =         15
+
+    --------------------------------------------------------------------------
+         Factor  |   Eigenvalue   Difference        Proportion   Cumulative
+    -------------+------------------------------------------------------------
+        Factor1  |      4.76840      4.59277            0.9423       0.9423
+        Factor2  |      0.17563      0.08412            0.0347       0.9770
+        Factor3  |      0.09151      0.07368            0.0181       0.9951
+        Factor4  |      0.01783      0.01067            0.0035       0.9986
+        Factor5  |      0.00716      0.00737            0.0014       1.0000
+        Factor6  |     -0.00021            .           -0.0000       1.0000
+    --------------------------------------------------------------------------
+    LR test: independent vs. saturated:  chi2(15) = 4481.92 Prob>chi2 = 0.0000
+
+Factor loadings (pattern matrix) and unique variances
+
+    ----------------------------------------------------------------
+        Variable |  Factor1   Factor2   Factor3   Factor4   Factor5 
+    -------------+--------------------------------------------------
+          c_comp |   0.8995   -0.1972   -0.0736    0.0304   -0.0506 
+          c_conf |   0.8274   -0.1363    0.0380    0.0825    0.0417 
+       c_capable |   0.9383   -0.1296    0.1127   -0.0847   -0.0093 
+     c_efficient |   0.8756    0.1763    0.1872    0.0117    0.0044 
+         c_intel |   0.9248    0.0277   -0.1712   -0.0485    0.0441 
+         c_skill |   0.8788    0.2637   -0.0872    0.0210   -0.0284 
+    ----------------------------------------------------------------
+
+    ----------------------------
+        Variable |   Uniqueness 
+    -------------+--------------
+          c_comp |      0.1431  
+          c_conf |      0.2868  
+       c_capable |      0.0828  
+     c_efficient |      0.1670  
+         c_intel |      0.1105  
+         c_skill |      0.1492  
+    ----------------------------
+
+.  
+.  egen c_scale = rowmean(c_comp c_conf c_capable c_efficient c_intel c_skill)
+
+.  label var c_scale "Competence: Scale"
+
+.  
+.  bysort vig_ses: sum c_scale
+
+--------------------------------------------------------------------------------
+-> vig_ses = high-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        348    7.498084     1.54731          1         10
+
+--------------------------------------------------------------------------------
+-> vig_ses = low-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        347     5.40586    1.807963          2         10
+
+
+.  bysort vig_race: sum c_scale
+
+--------------------------------------------------------------------------------
+-> vig_race = Black
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        232     6.41092    2.040114          2         10
+
+--------------------------------------------------------------------------------
+-> vig_race = Latina
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        231    6.305916    1.896404          2         10
+
+--------------------------------------------------------------------------------
+-> vig_race = White
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        232     6.64296    1.995615          1         10
+
+
+.  bysort vig_group: sum c_scale
+
+--------------------------------------------------------------------------------
+-> vig_group = Black, Low-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        116    5.484195    1.989705          2         10
+
+--------------------------------------------------------------------------------
+-> vig_group = Latina, Low-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        115    5.313043    1.784183          2         10
+
+--------------------------------------------------------------------------------
+-> vig_group = White, Low-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        116     5.41954    1.644708          2         10
+
+--------------------------------------------------------------------------------
+-> vig_group = Black, High-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        116    7.337644    1.633653   2.333333         10
+
+--------------------------------------------------------------------------------
+-> vig_group = Latina, High-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        116     7.29023    1.440129        2.5         10
+
+--------------------------------------------------------------------------------
+-> vig_group = White, High-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     c_scale |        116    7.866379    1.508305          1         10
+
+
+.  
+.  
+. ***********
+. //warmth alpha=0.9545
+. ***********
+. 
+.  pwcorr w_friendly w_wellint w_trust w_warm w_goodnat w_sincere
+
+             | w_frie~y w_well~t  w_trust   w_warm w_good~t w_sinc~e
+-------------+------------------------------------------------------
+  w_friendly |   1.0000 
+   w_wellint |   0.7439   1.0000 
+     w_trust |   0.6815   0.7980   1.0000 
+      w_warm |   0.7695   0.7644   0.7564   1.0000 
+   w_goodnat |   0.7705   0.7853   0.7863   0.8886   1.0000 
+   w_sincere |   0.7165   0.7807   0.8087   0.7939   0.8441   1.0000 
+
+.  
+.  alpha w_friendly w_wellint w_trust w_warm w_goodnat w_sincere, item
+
+Test scale = mean(unstandardized items)
+
+                                                            average
+                             item-test     item-rest       interitem
+Item         |  Obs  Sign   correlation   correlation     covariance      alpha
+-------------+-----------------------------------------------------------------
+w_friendly   |  695    +       0.8573        0.8025        2.742229      0.9522
+w_wellint    |  695    +       0.9001        0.8530        2.552448      0.9465
+w_trust      |  695    +       0.8959        0.8433        2.505615      0.9481
+w_warm       |  695    +       0.9165        0.8779        2.548334      0.9437
+w_goodnat    |  695    +       0.9362        0.9056        2.497882      0.9404
+w_sincere    |  695    +       0.9134        0.8729         2.54253      0.9442
+-------------+-----------------------------------------------------------------
+Test scale   |                                              2.56484      0.9545
+-------------------------------------------------------------------------------
+
+.  factor w_*, ipf
+(obs=695)
+
+Factor analysis/correlation                      Number of obs    =        695
+    Method: iterated principal factors           Retained factors =          5
+    Rotation: (unrotated)                        Number of params =         15
+
+    --------------------------------------------------------------------------
+         Factor  |   Eigenvalue   Difference        Proportion   Cumulative
+    -------------+------------------------------------------------------------
+        Factor1  |      4.74850      4.57263            0.9360       0.9360
+        Factor2  |      0.17587      0.07111            0.0347       0.9706
+        Factor3  |      0.10476      0.07369            0.0206       0.9913
+        Factor4  |      0.03108      0.01764            0.0061       0.9974
+        Factor5  |      0.01344      0.01364            0.0026       1.0000
+        Factor6  |     -0.00020            .           -0.0000       1.0000
+    --------------------------------------------------------------------------
+    LR test: independent vs. saturated:  chi2(15) = 4423.40 Prob>chi2 = 0.0000
+
+Factor loadings (pattern matrix) and unique variances
+
+    ----------------------------------------------------------------
+        Variable |  Factor1   Factor2   Factor3   Factor4   Factor5 
+    -------------+--------------------------------------------------
+      w_friendly |   0.8288   -0.1015    0.1994    0.0560    0.0448 
+       w_wellint |   0.8822    0.1694    0.1666   -0.0113   -0.0585 
+         w_trust |   0.8746    0.2390   -0.0799   -0.0770    0.0269 
+          w_warm |   0.9118   -0.2127   -0.0186   -0.0973    0.0315 
+       w_goodnat |   0.9385   -0.1658   -0.1113    0.0230   -0.0721 
+       w_sincere |   0.8980    0.0838   -0.1347    0.1090    0.0333 
+    ----------------------------------------------------------------
+
+    ----------------------------
+        Variable |   Uniqueness 
+    -------------+--------------
+      w_friendly |      0.2579  
+       w_wellint |      0.1618  
+         w_trust |      0.1650  
+          w_warm |      0.1127  
+       w_goodnat |      0.0735  
+       w_sincere |      0.1554  
+    ----------------------------
+
+.  
+.  egen w_scale = rowmean(w_friendly w_wellint w_trust w_warm w_goodnat w_sincer
+> e)
+
+.  label var w_scale "Warmth: Scale"
+
+.  
+.  bysort vig_ses: sum w_scale
+
+--------------------------------------------------------------------------------
+-> vig_ses = high-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        348     7.09387    1.545904          2         10
+
+--------------------------------------------------------------------------------
+-> vig_ses = low-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        347    6.246398    1.622403          2         10
+
+
+.  bysort vig_race: sum w_scale
+
+--------------------------------------------------------------------------------
+-> vig_race = Black
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        232    6.391523    1.738382          2         10
+
+--------------------------------------------------------------------------------
+-> vig_race = Latina
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        231    6.606061    1.664399          2         10
+
+--------------------------------------------------------------------------------
+-> vig_race = White
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        232    7.014368    1.446175          3         10
+
+
+.  bysort vig_group: sum w_scale
+
+--------------------------------------------------------------------------------
+-> vig_group = Black, Low-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        116    6.102012     1.77091          2         10
+
+--------------------------------------------------------------------------------
+-> vig_group = Latina, Low-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        115    6.118841    1.585873          2         10
+
+--------------------------------------------------------------------------------
+-> vig_group = White, Low-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        116    6.517241    1.476119          3         10
+
+--------------------------------------------------------------------------------
+-> vig_group = Black, High-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        116    6.681034    1.662832        2.5         10
+
+--------------------------------------------------------------------------------
+-> vig_group = Latina, High-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        116     7.08908    1.604557          2         10
+
+--------------------------------------------------------------------------------
+-> vig_group = White, High-SES
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+     w_scale |        116    7.511494    1.234317          4         10
+
+
+.  
+.  
+. ****************************************************************
+. //  save and exit
+. ****************************************************************
+.         codebook, compact
+
+Variable      Obs Unique      Mean  Min  Max  Label
+--------------------------------------------------------------------------------
+prolificid    695    695         .    .    .  Prolific ID
+vig_race      695      3         1    0    2  Vignette Race/Ethnicity
+vig_job       695      2  .4992806    0    1  Vignette Job
+vig_ses       695      2  .4992806    0    1  Vignette Socio-economic Status
+is_agree      695      1         1    1    1  is_agree
+rescheck      695      1         1    1    1  US Residece Verification
+agecheck      695      1         1    1    1  Age Verification
+c_comp        695     10  6.473381    1   10  Competent: Competent (1-10)
+c_conf        695     10  6.581295    1   10  Competent: Confident (1-10)
+c_capable     695     10   6.68777    1   10  Competent: Confident (1-10)
+c_efficient   695     10   6.56259    1   10  Competent: Efficient (1-10)
+c_intel       695     10  6.241727    1   10  Competent: Intelligent (1-10)
+c_skill       695     10  6.174101    1   10  Compentent: Skillfull (1-10)
+w_friendly    695      9  6.660432    2   10  Warm: Friendly (1-10)
+w_wellint     695      9  6.897842    2   10  Warm: Well-intentioned (1-10)
+w_trust       695     10  6.535252    1   10  Warm: Trust-worthy (1-10)
+w_warm        695     10  6.604317    1   10  Warm: Warm (1-10)
+w_goodnat     695     10  6.682014    1   10  Warm: Good-natured (1-10)
+w_sincere     695      9  6.644604    2   10  Warm: Sincere (1-10)
+up_prob       695     10  7.069065    1   10  How problematic is UP to most p...
+promisc       695     10  5.282014    1   10  How sexually promiscuous is cha...
+up_lifequa~w  695     10  5.702158    1   10  What is character's quality of ...
+up_lifequa~p  695     10  3.608633    1   10  What would be character's life ...
+up_lifequa~d  695     10  3.871942    1   10  What would be character's child...
+up_likely     695     10  5.461871    1   10  What is character's likelihood ...
+up_welf       695     10  6.384173    1   10  What is character's likelihood ...
+up_resp_s     695     10  4.007194    1   10  How responsible is state for ch...
+up_resp_c     695     10  8.254676    1   10  How responsible is character fo...
+bc_rec        695      2  .6417266    0    1  What contraception should chara...
+bc_recopen    695    662         .    .    .  Please explain why you chose th...
+com_iud       695     10  5.781295    1   10  Perceived Contraceptive Prevale...
+com_implant   695     10  4.510791    1   10  Perceived Contraceptive Prevale...
+com_sterile   695     10  3.030216    1   10  Perceived Contraceptive Prevale...
+com_pill      695      9  8.909353    1   10  Perceived Contraceptive Prevale...
+com_condom    695     10  7.932374    1   10  Perceived Contraceptive Prevale...
+com_withdraw  695     10  7.556835    1   10  Perceived Contraceptive Prevale...
+attn_name     695      4  1.028777    0    3  Attention Check - Name
+attn_age      695      4  20.68345    3   26  attn_age
+attn_race     695      4  1.027338    0    3  Attention Check - Race
+attn_job      695      3  .5453237    0    2  Attention Check - Job
+attn_college  695      3  .5769784    0    2  Attention Check - College Atten...
+r_age         694     57  33.28386   18   75  Respondent Age
+r_gender      695      3  .5438849    0    2  Respondent Gender
+r_genderopen    1      1         .    .    .  Repondent Gender - open
+r_race_6_t~t   24     11         .    .    .  r_race_6_TEXT
+r_hispanic    695      2  .2143885    0    1  Is R Hispanic/Latino?
+r_pol         695      5  1.300719    0    4  Respondent Political Affiliation
+r_educ        695      5  2.120863    0    4  Respondent Education
+r_relig       695      6  3.307914    0    5  Respondent Religion
+r_religopen    88     42         .    .    .  Respondent Religion - open
+r_stab_child  695     10   6.03741    1   10  R's Financial Stability: Childh...
+r_stab_now    695     10  6.086331    1   10  R's Financial Stability: Now (1...
+r_sex_enc     695      3  .7913669    0    2  R has had a Voluntary Sexual En...
+vig_name      695      3  .9985612    0    2  Vignette Name
+vig_college   695      2  .5007194    0    1  Vignette College
+vig_group     695      6  2.502158    0    5  Vignette Group (by race/ethnici...
+r_age_c       695      6   1.36259    0    5  Respondent Age - Categorical
+r_race        695      7  3.433094    0    6  Respondent Race/Ethnicity
+r_race_t      695      4  1.414388    0    3  Respondent Race/Ethnicity
+r_pol_t       695      3  .5165468    0    2  Respondent Political Affiliatio...
+r_relig_b     695      2  .4661871    0    1  Respondent is Religious
+r_nobc        695      2  .1438849    0    1  Respondent Contraception: None
+r_pill        695      2   .571223    0    1  Respondent Contraception: The Pill
+r_iud         695      2  .1611511    0    1  Respondent Contraception: IUD
+r_condom      695      2  .7035971    0    1  Respondent Contraception: Male ...
+r_implant     695      2  .0589928    0    1  Respondent Contraception: Subde...
+r_sterile     695      2  .0330935    0    1  Respondent Contraception: Femal...
+r_withdraw    695      2  .4517986    0    1  Respondent Contraception: Withd...
+r_other       695      2  .0647482    0    1  Respondent Contraception: Other
+r_bcopen       45     39         .    .    .  Respondent Birth Control - open
+ingroup_race  695      2  .3165468    0    1  Ingroup: Race
+ingroup_ge~r  695      2  .4863309    0    1  Ingroup: Gender
+ingroup_bc    695      2  .4302158    0    1  Ingroup: Contraceptive Usage
+ingroup_rg    695      2  .1553957    0    1  Ingroup: Race and Gender
+ingroup_bcg   695      2  .2028777    0    1  Ingroup: Contraceptive Usage an...
+ingroup_bcr   695      2  .1381295    0    1  Ingroup: Contraceptive Usage, R...
+ingroup       695      2  .0705036    0    1  
+weak_oe       695      1         0    0    0  Open-Ended Is Weak
+fail_namec~k  695      3  .0431655    0    2  Fail Check: Name
+fail_agech~k  695      3        .2    0    2  Fail Check: Age
+fail_racec~k  695      3  .0359712    0    2  Fail Check: Race
+fail_jobch~k  695      3  .0532374    0    2  Fail Check: Job
+fail_colle~k  695      3  .1223022    0    2  Fail Check: College
+fail          695      1         0    0    0  Fail Check: Age, Race, and Job
+strtline_c    695      2  .1741007    0    1  Straightlining: Competence Scale
+strtline_w    695      2  .2071942    0    1  Straightlining: Warmth Scale
+nmissing      695      4  3.774101    2    5  
+c_scale       695     50  6.453477    1   10  Competence: Scale
+w_scale       695     48  6.670743    2   10  Warmth: Scale
+--------------------------------------------------------------------------------
+
+.         
+.         save "_data/gric-data03-scales.dta", replace
+file _data/gric-data03-scales.dta saved
+
+. 
+.  log close
+      name:  <unnamed>
+       log:  /Users/shaymilner/Documents/Spring 2022/SOC4981/work/00logs/gric-da
+> ta03-scales.log
+  log type:  text
+ closed on:  12 Mar 2022, 13:06:47
+--------------------------------------------------------------------------------

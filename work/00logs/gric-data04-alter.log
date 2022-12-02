@@ -1,0 +1,63 @@
+--------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/shaymilner/Documents/Spring 2022/SOC4981/work/00logs/gric-da
+> ta04-alter.log
+  log type:  text
+ opened on:  23 Jan 2022, 18:29:07
+
+.  
+. //  setup
+.  
+.  version 16.1
+
+.  set linesize 80
+
+.  clear all
+
+.  macro drop _all
+
+.  set matsize 100, perm
+(set matsize preference recorded)
+set matsize ignored.
+    Matrix sizes are no longer limited by c(matsize) in modern Statas.  Matrix
+    sizes are now limited by flavor of Stata.  See limits for more details.
+
+. 
+.  
+.  local pgm   gric-data04-alter.do
+
+.  
+. // Created 
+.  local dte   2022-01-14
+
+.  local who   chanteria milner
+
+.  local tag   "`pgm'.do `who' `dte'"
+
+.  
+. 
+. // Modified
+.  local dte      2022-01-15
+
+.  local who      chanteria milner
+
+.  
+.  di "`tag'"
+gric-data04-alter.do.do chanteria milner 2022-01-14
+
+. 
+. 
+. ****************************************************************
+. //  import data
+. ****************************************************************
+. 
+.  use "_data/gric-data03-scales.dta", clear
+
+.  
+.  
+. 
+end of do-file
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD21010.000000"
+
+. capture log close

@@ -1,0 +1,353 @@
+----------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/shaymilner/Documents/Spring 2022/SOC4981/work/00logs/gric-do02-02-analysis_tables.log
+  log type:  text
+ opened on:  30 Mar 2022, 14:16:09
+
+.  
+. //  setup
+.  
+.  version 16.1
+
+.  set linesize 80
+
+.  clear all
+
+.  macro drop _all
+
+.  set matsize 100, perm
+(set matsize preference recorded)
+set matsize ignored.
+    Matrix sizes are no longer limited by c(matsize) in modern Statas.  Matrix
+    sizes are now limited by flavor of Stata.  See limits for more details.
+
+. 
+.  
+.  local pgm   gric-do02-02-analysis_tables.do
+
+.  
+. // Created 
+.  local dte   2022-02-18
+
+.  local who   chanteria milner
+
+.  local tag   "`pgm'.do `who' `dte'"
+
+.  
+. 
+. // Modified
+.  local dte      2022-02-19
+
+.  local who      chanteria milner
+
+.  
+.  di "`tag'"
+gric-do02-02-analysis_tables.do.do chanteria milner 2022-02-18
+
+. 
+. 
+. ****************************************************************
+. //  import data
+. ****************************************************************
+. 
+.  use "_data/gric-do02-01-analysis.dta", clear
+
+. 
+. ****************************************************************
+. //  Create dummy variables
+. ****************************************************************
+.  
+. *****************
+. //  respondent race
+. ***************** 
+.  // black
+.  gen r_black=0
+
+.  replace r_black=1 if r_race_t==0
+(153 real changes made)
+
+.  
+.  // hispanic - already created (r_hispanic)
+.  
+.  // white
+.  gen r_white=0
+
+.  replace r_white=1 if r_race_t==2
+(345 real changes made)
+
+.  
+.  // other race
+.  gen r_other_race=0
+
+.  replace r_other_race=1 if r_race_t==3
+(48 real changes made)
+
+. 
+.  
+. *****************
+. //  respondent gender
+. ***************** 
+.  // woman
+.  gen r_woman=0
+
+.  replace r_woman=1 if r_gender==0
+(338 real changes made)
+
+.   
+.  // man
+.  gen r_man=0
+
+.  replace r_man=1 if r_gender==1
+(336 real changes made)
+
+.  
+.  // other gender
+.  gen r_other_gender=0
+
+.  replace r_other_gender=1 if r_gender==2
+(21 real changes made)
+
+. 
+.  
+. *****************
+. //  respondent education
+. ***************** 
+.  // hs or less
+.  gen r_highschool=0
+
+.  replace r_highschool=1 if r_educ==0 
+(82 real changes made)
+
+.  
+.  // some college
+.  gen r_somecollege=0
+
+.  replace r_somecollege=1 if r_educ==1
+(179 real changes made)
+
+.  
+.  // 2-year degree
+.  gen r_twoyear=0
+
+.  replace r_twoyear=1 if r_educ==2
+(84 real changes made)
+
+.  
+.  // 4-year degree
+.  gen r_fouryear=0
+
+.  replace r_fouryear=1 if r_educ==3
+(273 real changes made)
+
+.  
+.  // master's, doctorate, or professional
+.  gen r_masters=0
+
+.  replace r_masters=1 if r_educ==4
+(77 real changes made)
+
+.  
+.  
+. ****************************************************************
+. //  Create tables for regression models
+. **************************************************************** 
+.  
+. 
+end of do-file
+
+. findit spost
+
+. ssc install spost13
+ssc install: "spost13" not found at SSC, type search spost13
+(To find all packages at SSC that start with s, type ssc describe s)
+r(601);
+
+. search spost13
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD40926.000000"
+
+.  logistic bc_rec vig_ses
+
+Logistic regression                             Number of obs     =        695
+                                                LR chi2(1)        =       9.72
+                                                Prob > chi2       =     0.0018
+Log likelihood = -448.56847                     Pseudo R2         =     0.0107
+
+------------------------------------------------------------------------------
+      bc_rec | Odds Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     vig_ses |   .6091392     .09729    -3.10   0.002     .4454152    .8330443
+       _cons |   2.314286   .2702768     7.18   0.000     1.840807    2.909549
+------------------------------------------------------------------------------
+Note: _cons estimates baseline odds.
+
+.  margins, at(vig_ses=(0 1)) post
+
+Adjusted predictions                            Number of obs     =        695
+Model VCE    : OIM
+
+Expression   : Pr(bc_rec), predict()
+
+1._at        : vig_ses         =           0
+
+2._at        : vig_ses         =           1
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         _at |
+          1  |   .6982759   .0246053    28.38   0.000     .6500503    .7465014
+          2  |   .5850144   .0264506    22.12   0.000     .5331722    .6368566
+------------------------------------------------------------------------------
+
+.  mlincom 2-1
+
+             |   lincom    pvalue        ll        ul 
+-------------+----------------------------------------
+           1 |   -0.113     0.002    -0.184    -0.042 
+
+. 
+end of do-file
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD40926.000000"
+
+.   logistic bc_rec i.vig_ses##c.c_scale
+
+Logistic regression                             Number of obs     =        695
+                                                LR chi2(3)        =      13.62
+                                                Prob > chi2       =     0.0035
+Log likelihood = -446.61911                     Pseudo R2         =     0.0150
+
+------------------------------------------------------------------------------
+      bc_rec | Odds Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     vig_ses |
+    low-SES  |   .1763148   .1251914    -2.44   0.015     .0438427    .7090551
+     c_scale |   .8580993   .0684549    -1.92   0.055     .7338933    1.003326
+             |
+     vig_ses#|
+   c.c_scale |
+    low-SES  |   1.182967   .1183941     1.68   0.093     .9722604    1.439339
+             |
+       _cons |   7.373578   4.580465     3.22   0.001     2.182288    24.91406
+------------------------------------------------------------------------------
+Note: _cons estimates baseline odds.
+
+.  margins, at(vig_ses=(0 1)) dydx(c_scale) post
+
+Average marginal effects                        Number of obs     =        695
+Model VCE    : OIM
+
+Expression   : Pr(bc_rec), predict()
+dy/dx w.r.t. : c_scale
+
+1._at        : vig_ses         =           0
+
+2._at        : vig_ses         =           1
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+c_scale      |
+         _at |
+          1  |  -.0297139   .0140838    -2.11   0.035    -.0573176   -.0021102
+          2  |   .0036286   .0145821     0.25   0.803    -.0249518     .032209
+------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD40926.000000"
+
+.    logistic bc_rec i.vig_ses##c.c_scale
+
+Logistic regression                             Number of obs     =        695
+                                                LR chi2(3)        =      13.62
+                                                Prob > chi2       =     0.0035
+Log likelihood = -446.61911                     Pseudo R2         =     0.0150
+
+------------------------------------------------------------------------------
+      bc_rec | Odds Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     vig_ses |
+    low-SES  |   .1763148   .1251914    -2.44   0.015     .0438427    .7090551
+     c_scale |   .8580993   .0684549    -1.92   0.055     .7338933    1.003326
+             |
+     vig_ses#|
+   c.c_scale |
+    low-SES  |   1.182967   .1183941     1.68   0.093     .9722604    1.439339
+             |
+       _cons |   7.373578   4.580465     3.22   0.001     2.182288    24.91406
+------------------------------------------------------------------------------
+Note: _cons estimates baseline odds.
+
+.  margins,  dydx(c_scale) post
+
+Average marginal effects                        Number of obs     =        695
+Model VCE    : OIM
+
+Expression   : Pr(bc_rec), predict()
+dy/dx w.r.t. : c_scale
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     c_scale |  -.0141539   .0109823    -1.29   0.197    -.0356788    .0073711
+------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "/var/folders/k_/7gvbhq_s1mb10jgw8rq8w4t00000gn/T//SD40926.000000"
+
+.   logistic bc_rec i.vig_ses##c.c_scale
+
+Logistic regression                             Number of obs     =        695
+                                                LR chi2(3)        =      13.62
+                                                Prob > chi2       =     0.0035
+Log likelihood = -446.61911                     Pseudo R2         =     0.0150
+
+------------------------------------------------------------------------------
+      bc_rec | Odds Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     vig_ses |
+    low-SES  |   .1763148   .1251914    -2.44   0.015     .0438427    .7090551
+     c_scale |   .8580993   .0684549    -1.92   0.055     .7338933    1.003326
+             |
+     vig_ses#|
+   c.c_scale |
+    low-SES  |   1.182967   .1183941     1.68   0.093     .9722604    1.439339
+             |
+       _cons |   7.373578   4.580465     3.22   0.001     2.182288    24.91406
+------------------------------------------------------------------------------
+Note: _cons estimates baseline odds.
+
+.  margins, at(vig_ses=(0 1)) dydx(c_scale) post
+
+Average marginal effects                        Number of obs     =        695
+Model VCE    : OIM
+
+Expression   : Pr(bc_rec), predict()
+dy/dx w.r.t. : c_scale
+
+1._at        : vig_ses         =           0
+
+2._at        : vig_ses         =           1
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+c_scale      |
+         _at |
+          1  |  -.0297139   .0140838    -2.11   0.035    -.0573176   -.0021102
+          2  |   .0036286   .0145821     0.25   0.803    -.0249518     .032209
+------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. exit, clear
